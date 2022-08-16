@@ -1,3 +1,7 @@
+html {
+    font-size: 16px;
+}
+
 .container {
   max-width: 1440px;
   margin: 0 auto;
@@ -19,8 +23,25 @@
 
 .calendar__btn {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   margin-bottom: 5px;
+}
+
+.btns__one:not(:last-child) {
+    margin-right: 10px;
+}
+
+.btn-navigation {
+    cursor: pointer;
+    background-color: transparent;
+    color: #1e6599;
+    border: 1px solid #1e6599;
+    border-radius: 4px;
+    padding: 7px 14px;
+}
+
+.btn-navigation:hover {
+    border: 1px solid #6BAAD8;
 }
 
 .calendar__table {
@@ -106,6 +127,10 @@
   background-color: #D7E7F4;
   padding-left: 5px;
   padding-right: 5px;
+}
+
+.tasks__name-one:hover {
+    background-color: #e5edf3; 
 }
 
 .tasks__name-title {
