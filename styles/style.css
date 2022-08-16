@@ -1,0 +1,117 @@
+.container {
+  max-width: 1440px;
+  margin: 0 auto;
+  
+}
+
+.calendar-tasks {
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid red;
+  padding: 10px;
+}
+
+.calendar {
+  width: 100%;
+  margin-right: 10px;
+  border: 1px solid blue;
+}
+
+.calendar__btn {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.calendar__table {
+  width: 100%;
+  table-layout: fixed;
+  border-spacing: 0px;
+  border-collapse: collapse;
+}
+
+.calendar__thead-th {
+  text-align: center;
+  border: 1px solid blue;
+  width: 100%;
+}
+
+.calendar__tbody-td {
+  text-align: center;
+  border: 1px solid blue;
+}
+
+.tasks {
+  width: 400px;
+  background-color: #F0F6FB;
+  padding: 5px;
+  height: 95vh;
+  overflow: scroll;
+}
+
+.task__title {
+  text-align: center;
+  line-height: 2px;
+}
+
+.task__search {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  margin: 5px;
+}
+
+.task__search::after {
+  content: "";
+  display: inline-block;
+  position: absolute;
+  background-image: url(../img/search2.svg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 20px;
+  height: 20px;
+  top: calc(50% - 10px);
+  right: 12.5px;
+  z-index: 1;
+}
+
+.task__search-text {
+  width: 100%;
+  border: none;
+  border: 1px solid #1E6599;
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
+}
+.task__search-text:focus {
+  outline: none;
+}
+
+.task__search-btn {
+  width: 50px;
+  height: 40px;
+  background-color: transparent;
+  z-index: 4;
+  border: 1px solid #1E6599;
+  border-left: transparent;
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
+  cursor: pointer;
+}
+
+.tasks__name-one {
+  border: 1px solid #1E6599;
+  margin: 5px;
+  line-height: 2px;
+  cursor: all-scroll;
+  background-color: #D7E7F4;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.tasks__name-title {
+    color: #1E6599;
+}
+
+.tasks__description {
+    color: #595959;
+}
