@@ -10,13 +10,11 @@ html {
 .calendar-tasks {
   display: flex;
   justify-content: space-between;
-  /* border: 1px solid red; */
   padding: 10px;
 }
 
 .calendar {
   width: 100%;
-  /* margin-right: 10px; */
   border: 1px solid #ddd;
   background-color: #fff;
   height: 95vh;
@@ -42,9 +40,13 @@ html {
 .calendar__btn {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 5px;
-  margin-right: 10px;
-  margin-top: 5px;
+  padding: 5px;
+  padding-right: 10px;
+  padding-top: 5px;
+  background-color: #F0F6FB;
+  position: sticky;
+  top: 0;
+  border-bottom: #F0F6FB 1px solid;
 }
 
 .btns__one:not(:last-child) {
@@ -53,7 +55,7 @@ html {
 
 .btn-navigation {
     cursor: pointer;
-    background-color: transparent;
+    background-color: white;
     color: #1e6599;
     border: 1px solid #1e6599;
     border-radius: 4px;
@@ -70,7 +72,31 @@ html {
   border-spacing: 0px;
   border-collapse: collapse;
   border:1px solid #ddd;
+  border-top: transparent;
   cursor: default;
+}
+
+.calendar__thead {
+  position: sticky;
+  top: 45px;
+  background-color: #fff;
+  /* height: 10px; */
+}
+
+.calendar__thead::after {
+  content: '';
+  display: block;
+  position: absolute;
+  border-bottom: 1px solid #ddd;
+  width: 100%;
+}
+
+.calendar__thead::before {
+  content: '';
+  display: block;
+  position: absolute;
+  border-bottom: 1px solid #ddd;
+  width: 100%;
 }
 
 .calendar__thead-tr {
@@ -78,7 +104,7 @@ html {
 }
 .calendar__thead-th:not(:first-child) {
   text-align: center;
-  border:1px solid #ddd;
+  border-left: #ddd 1px solid; 
 }
 
 .calendar__tbody-tr {
@@ -101,6 +127,7 @@ html {
 .tasks {
   flex: 0 0 20%;
   background-color: #F0F6FB;
+  border: 1px solid #ddd;
   padding-left: 5px;
   padding-right: 5px;
   height: 95vh;
@@ -192,7 +219,6 @@ html {
   background-color: #D7E7F4;
   padding-left: 5px;
   padding-right: 5px;
-  /* word-wrap:break-word; */
 }
 
 .tasks__name-one:hover {
