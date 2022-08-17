@@ -12,14 +12,17 @@
     <div class="container">
       <div class="calendar-tasks">
         <div class="calendar">
-          <div class="calendar__btn btns">
-            <button class="btns__one btns__today btn-navigation">Today</button>
-            <button class="btns__one btns__left btn-navigation">Left</button>
-            <button class="btns__one btns__right btn-navigation">Right</button>
-          </div>
+        <div class="calendar__header">
+            <img src="img/logo.svg" alt="ELMA365" class="calendar__logo">
+            <div class="calendar__btn btns">
+                <button class="btns__one btns__today btn-navigation">Today</button>
+                <button class="btns__one btns__left btn-navigation">Left</button>
+                <button class="btns__one btns__right btn-navigation">Right</button>
+            </div>
+        </div>
           <table class="calendar__table">
+            <col class="calendar_first-col">
             <thead class="calendar__thead">
-              <div class="test">
                 <tr class="calendar__thead-tr">
                   <th class="calendar__thead-th calendar__thead-th--first"></th>
                   <th class="calendar__thead-th">1</th>
@@ -38,14 +41,25 @@
                   <th class="calendar__thead-th">15</th>
                   <th class="calendar__thead-th">16</th>
                 </tr>
-              </div>
             </thead>
             <tbody class="calendar__tbody">
               <tr class="calendar__tbody-tr">
                 <td class="calendar__tbody-td calendar__tbody-td--first">
                   Павел
                 </td>
-                <td class="calendar__tbody-td">1</td>
+                <td class="calendar__tbody-td tbody-td">
+                    <div class="tbody-td__container">
+                        <div class="tbody-td__task">
+                            <h4 class="tdbody-td__title">Задание 222</h4>
+                        </div>
+                        <div class="tbody-td__task">
+                            <h4 class="tdbody-td__title">Задание 222</h4>
+                        </div>
+                        <div class="tbody-td__task">
+                            <h4 class="tdbody-td__title">Задание 222</h4>
+                        </div>
+                    </div>
+                </td>              
                 <td class="calendar__tbody-td">2</td>
                 <td class="calendar__tbody-td">3</td>
                 <td class="calendar__tbody-td">4</td>
