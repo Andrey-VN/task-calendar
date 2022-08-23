@@ -2,10 +2,10 @@ html {
   font-size: 14px;
 }
 
-.container {
+/* .container {
   max-width: 1440px;
   margin: 0 auto;
-}
+} */
 
 .calendar-tasks {
   display: flex;
@@ -98,6 +98,7 @@ html {
   display: block;
   position: absolute;
   border-bottom: 1px solid #ddd;
+  box-shadow: 0px 0px 1px #6baad8;
   width: 100%;
 }
 
@@ -106,6 +107,7 @@ html {
   display: block;
   position: absolute;
   border-bottom: 1px solid #ddd;
+  box-shadow: 0px 0px 1px #6baad8;
   width: 100%;
 }
 
@@ -115,9 +117,27 @@ html {
 
 .calendar__thead-th:not(:first-child) {
   text-align: center;
-  border-left: #ddd 1px solid;
+  
 }
-.calendar_first-col {
+
+.calendar__thead-th {
+  position: relative;
+  height: 50px;
+}
+
+.calendar__thead-th::after {
+  content: '';
+  display: block;
+  position: absolute;
+  width: 1px;
+  height: 80%;
+  background-color: #ddd;
+  top: 10%;
+  left: calc(100% - .5px);
+  box-shadow: 0px 0px 1px #6baad8; 
+}
+
+.calendar__first-col {
   width: 60px;
 }
 .calendar__tbody-tr {
