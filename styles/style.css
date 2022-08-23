@@ -141,10 +141,13 @@ html {
   width: 60px;
 }
 .calendar__tbody-tr {
+  padding: 0;
+  margin: 0;
   font-size: 12px;
   overflow-wrap: break-word;
   height: 80px;
   color: #252525;
+  /* box-sizing: border-box; */
 }
 
 .calendar__tbody-td--first {
@@ -158,27 +161,26 @@ html {
   border: 1px solid #ddd;
 }
 
-.tbody-td {
-}
-
-.tbody-td__container {
+/* .tbody-td__container {
   min-height: 80px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-}
+} */
 
 .tbody-td__task {
-  flex: 1 1 100%;
+  height: 74px;
   background-color: #ede6da;
   border: 1px solid #b4b4af;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  /* box-sizing: border-box; */
 }
 
 .tdbody-td__title {
-  margin: 4px 0 4px 0;
+  margin-top: 100%;
+  margin-bottom: 100%;
 }
 .tasks {
   flex: 0 0 20%;
