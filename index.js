@@ -97,7 +97,8 @@ function showUsersInTable(data) {
       <td class="calendar__tbody-td calendar__tbody-td--first">
         ${element.surname} ${element.firstName}
       </td>
-      <td class="calendar__tbody-td"></td>
+      <td class="calendar__tbody-td">
+      </td>
       <td class="calendar__tbody-td"></td>
       <td class="calendar__tbody-td"></td>
       <td class="calendar__tbody-td"></td>
