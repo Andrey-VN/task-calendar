@@ -11,13 +11,14 @@ html {
   display: flex;
   justify-content: space-between;
   padding: 10px;
+  height: 100vh;
 }
 
 .calendar {
   width: 100%;
   border: 1px solid #ddd;
   background-color: #fff;
-  height: 95vh;
+  /* height: 95vh; */
   overflow-x: hidden;
 }
 
@@ -60,7 +61,7 @@ html {
   padding-top: 5px;
 }
 
-.btns__one:not(:last-child) {
+.btns__one {
   margin-right: 10px;
 }
 
@@ -72,7 +73,9 @@ html {
   border-radius: 4px;
   padding: 7px 14px;
 }
-
+.btns__week{
+  margin-right: 100px;
+}
 .btn-navigation:hover {
   border: 1px solid #6baad8;
 }
@@ -174,7 +177,7 @@ html {
 
 
 .tbody-td__task {
-  height: 74px;
+  /* height: 76px; */
   width: auto;
   background-color: #ede6da;
   border: 1px solid #b4b4af;
@@ -185,8 +188,8 @@ html {
 }
 
 .tdbody-td__title {
-  margin-top: 100%;
-  margin-bottom: 100%;
+  margin-top: 1;
+  margin-bottom: 1;
   display: block;
   /* height: 40px; */
 }
@@ -196,7 +199,7 @@ html {
   border: 1px solid #ddd;
   padding-left: 5px;
   padding-right: 5px;
-  height: 95vh;
+  /* height: 95vh; */
   overflow-x: hidden;
 }
 

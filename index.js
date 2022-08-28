@@ -47,204 +47,204 @@ class Task {
   }
 }
 
-async function getListUsers(url) {
-  let data = [];
-  try {
-    const resp = await fetch(API_URL_LIST_USERS);
-    const dataUsers = await resp.json();
-    data = dataUsers.map((element) => {
-      return new User(element);
-    });
-    console.log(data);
-    showUsersInTable(data);
-  } catch (e) {
-    throw e;
-  }
-}
+window.addEventListener("DOMContentLoaded", async () => {
+  const dataTasks = await getListTasks(API_URL_LIST_TASKS);
+  const dataUsers = await getListUsers(API_URL_LIST_USERS);
+  let createColumnsInTable = columnsDateCreate(7);
 
-async function getListTasks(url) {
-  let data = [];
-  try {
-    const resp = await fetch(API_URL_LIST_TASKS);
-    const dataUsers = await resp.json();
-    data = dataUsers.map((element) => {
-      return new Task(element);
-    });
-    console.log(data);
-    showTasks(data);
-  } catch (e) {
-    throw e;
-  }
-}
-
-function showTasks(data) {
-  const taskNames = document.querySelector(".tasks__names");
-  data.forEach((element) => {
-    taskNames.innerHTML += `
-    <div class="tasks__name-one" draggable="true" id=${element.id}>
-      <h4 class="tasks__name-title">${element.subject}</h4>
-    </div>
-    `;
-  });
-}
-
-function showUsersInTable(data) {
-  const calendarTbody = document.querySelector(".calendar__tbody");
-  data.forEach((element) => {
-    calendarTbody.innerHTML += `
-    <tr class="calendar__tbody-tr">
-      <td class="calendar__tbody-td calendar__tbody-td--first">
-        ${element.surname} ${element.firstName}
-      </td>
-      <td class="calendar__tbody-td">
-      </td>
-      <td class="calendar__tbody-td"></td>
-      <td class="calendar__tbody-td"></td>
-      <td class="calendar__tbody-td"></td>
-      <td class="calendar__tbody-td"></td>
-      <td class="calendar__tbody-td"></td>
-      <td class="calendar__tbody-td"></td>
-      <td class="calendar__tbody-td"></td>
-      <td class="calendar__tbody-td"></td>
-      <td class="calendar__tbody-td"></td>
-      <td class="calendar__tbody-td"></td>
-      <td class="calendar__tbody-td"></td>
-      <td class="calendar__tbody-td"></td>
-      <td class="calendar__tbody-td"></td>
-    </tr>
-    `;
-  });
-}
-
-function dragstartHandler(ev) {
-  ev.dataTransfer.setData("id", ev.target.id);
-}
-
-function dragoverHandler(ev) {
-  const isTdFirst = ev.target.classList.contains("calendar__tbody-td--first");
-  if (isTdFirst) return;
-  ev.preventDefault();
-}
-
-function dropHandler(ev) {
-  const data = ev.dataTransfer.getData("id");
-  if (!data) return;
-
-  const elem = document.getElementById(data);
-  const taskTitleElem = elem.querySelector(".tasks__name-title");
-
-  let isTbodyTd = ev.target.classList.contains("calendar__tbody-td");
-  if (!isTbodyTd) {
-    let elemParent = ev.target.parentNode;
-    while (elemParent.classList) {
-      isTbodyTd = elemParent.classList.contains("calendar__tbody-td");
-      if (isTbodyTd) {
-        elemParent.innerHTML += `
-          <div class="tbody-td__task">
-          <h4 class="tdbody-td__title">${taskTitleElem.textContent}</h4>
-          </div>
-          `;
-        break;
-      }
-      elemParent = elemParent.parentNode;
-    }
-  } else {
-    ev.target.innerHTML += `
-    <div class="tbody-td__task">
-    <h4 class="tdbody-td__title">${taskTitleElem.textContent}</h4>
-    </div>
-    `;
-  }
-
-  elem.parentNode.removeChild(elem);
-}
-
-window.addEventListener("DOMContentLoaded", () => {
   const tasksNames = document.querySelector(".tasks__names");
   const calendarTbody = document.querySelector(".calendar__tbody");
 
   const btnToday = document.querySelector(".btns__today");
   const btnLeft = document.querySelector(".btns__left");
   const btnRight = document.querySelector(".btns__right");
+  const btnWeek = document.querySelector(".btns__week");
 
   tasksNames.addEventListener("dragstart", dragstartHandler);
-
   calendarTbody.addEventListener("dragover", dragoverHandler);
   calendarTbody.addEventListener("drop", dropHandler);
 
-  const func = columnsDateCreate();
-
-  function scrollToday() {
-    func();
+  function dragstartHandler(ev) {
+    ev.dataTransfer.setData("id", ev.target.id);
   }
 
-  function scrollRight() {
-    func("right");
+  function dragoverHandler(ev) {
+    ev.preventDefault();
   }
 
-  function scrollLeft() {
-    func("left");
+  function dropHandler(ev) {
+    const data = ev.dataTransfer.getData("id");
+    if (!data) return;
+
+    const elem = document.getElementById(data);
+    let task = dataTasks.find((e) => e.id == elem.id);
+
+    let isTbodyTr = ev.target.classList.contains("calendar__tbody-tr");
+    if (!isTbodyTr) {
+      let elemParent = ev.target.parentNode;
+      while (elemParent.classList) {
+        isTbodyTr = elemParent.classList.contains("calendar__tbody-tr");
+        if (isTbodyTr) {
+          task.executor = elemParent.id
+          break;
+        }
+        elemParent = elemParent.parentNode;
+      }
+    } else {
+      task.executor = elem.id
+      
+    }
+    createColumnsInTable();
+
+    elem.parentNode.removeChild(elem);
   }
 
-  scrollToday();
+  async function getListUsers(url) {
+    try {
+      const resp = await fetch(API_URL_LIST_USERS);
+      const data = await resp.json();
+      return data.map((element) => {
+        return new User(element);
+      });
+    } catch (e) {
+      throw e;
+    }
+  }
 
-  btnToday.addEventListener("click", scrollToday);
-  btnLeft.addEventListener("click", scrollLeft);
-  btnRight.addEventListener("click", scrollRight);
+  async function getListTasks(url) {
+    try {
+      const resp = await fetch(API_URL_LIST_TASKS);
+      const data = await resp.json();
+      return await data.map((element) => {
+        return new Task(element);
+      });
+    } catch (e) {
+      throw e;
+    }
+  }
 
-  getListUsers(API_URL_LIST_USERS);
-  getListTasks(API_URL_LIST_TASKS);
+  function showTasks(data) {
+    const taskNames = document.querySelector(".tasks__names");
+    console.log(data);
+    data.forEach((element) => {
+      if(!element.executor) {
+        taskNames.innerHTML += `
+        <div class="tasks__name-one" draggable="true" id=${element.id}>
+          <h4 class="tasks__name-title">${element.subject}</h4>
+        </div>
+        `;
+      }
+    });
+  }
+
+  function columnsDateCreate(column = 14) {
+    let oneWeek = 0;
+
+    return function (side) {
+      let dataObj = [];
+      if (side == "right") {
+        oneWeek += column;
+      } else if (side == "left") {
+        oneWeek -= column;
+      } else if (side === "today") {
+        oneWeek = 0;
+      } 
+      const calendarTheadTR = document.querySelector(".calendar__thead-tr");
+      calendarTheadTR.innerHTML = `<th class="calendar__thead-th calendar__thead-th--first"></th>`;
+      oneWeek = getDateInThDelta(oneWeek);
+      console.log(oneWeek);
+      for (let i = 0; i < column; i++) {
+        calendarTheadTR.innerHTML += `<th class="calendar__thead-th">${
+          getDateInTh(oneWeek + i).dateInTh
+        }</th>`;
+        dataObj.push(getDateInTh(oneWeek + i).dateInTd);
+      }
+      showUsersInTable(dataUsers, column, dataObj);
+    };
+  }
+
+  function showUsersInTable(data, column = 14, dataObj) {
+    const calendarTbody = document.querySelector(".calendar__tbody");
+    calendarTbody.innerHTML = "";
+    data.forEach((user) => {
+      const trUser = document.createElement("tr");
+      trUser.classList.add("calendar__tbody-tr");
+      trUser.id = user.id;
+
+      trUser.innerHTML = `
+        <td class="calendar__tbody-td calendar__tbody-td--first">
+          ${user.surname} ${user.firstName}
+        </td>
+      `;
+
+      let taskUser = [];
+      dataTasks.forEach((e) => {
+        if(e.executor == user.id) {
+          taskUser.push(e)
+        }
+      });
+      if (taskUser) console.log(taskUser);
+
+      for (let i = 0; i < column; i++) {
+        const tdUser = document.createElement("td");
+        tdUser.classList.add("calendar__tbody-td")
+        if (taskUser && taskUser.length > 0) {
+          taskUser.forEach(e => {
+            if(e.planStartDate === dataObj[i]) {
+              tdUser.innerHTML += `
+              <div class="tbody-td__task">
+                <h4 class="tdbody-td__title">${e.subject}</h4>
+              </div>
+            `;
+            }
+          })
+        }
+        trUser.appendChild(tdUser);
+      }
+
+      calendarTbody.appendChild(trUser);
+    });
+  }
+
+
+  btnToday.addEventListener("click", () => {
+    createColumnsInTable("today");
+  });
+  btnLeft.addEventListener("click", () => {
+    createColumnsInTable("left");
+  });
+  btnRight.addEventListener("click", () => {
+    createColumnsInTable("right");
+  });
+  btnWeek.addEventListener("click", function() {
+    let oneWeek = "One week";
+    let twoWeeks = "Two weeks"
+
+    const oneWeekNumber = 14;
+    const twoWeeksNumber = 7;
+    if(this.innerText.toLowerCase() === oneWeek.toLowerCase()) {
+      this.innerText = twoWeeks;
+      createColumnsInTable = columnsDateCreate(twoWeeksNumber);
+    } else {
+      this.innerText = oneWeek;
+      createColumnsInTable = columnsDateCreate(oneWeekNumber);
+    }
+    createColumnsInTable();
+  });
+
+  //Порядок внизу не менять!!!!
+  createColumnsInTable("today");
+  showTasks(dataTasks);
+  
 });
 
-function columnsDateCreate() {
-  let oneWeek = 0;
-  const fortnight = 14;
-
-  let date = new Date();
-
-  return function (side = "today") {
-    if (side == "right") {
-      oneWeek += fortnight;
-    } else if (side == "left") {
-      oneWeek -= fortnight;
-    } else if (side === "today") {
-      oneWeek = 0;
-    } else {
-      return;
-    }
-    const calendarTheadTR = document.querySelector(".calendar__thead-tr");
-    calendarTheadTR.innerHTML = `<th class="calendar__thead-th calendar__thead-th--first"></th>`;
-    oneWeek = getDateInTh22(oneWeek);
-    console.log(oneWeek);
-    for (let i = 0; i < fortnight; i++) {
-      calendarTheadTR.innerHTML += `<th class="calendar__thead-th">${getDateInTh(
-        oneWeek + i
-      )}</th>`;
-    }
-
-    // console.log(getCountDay(date))
-  };
-}
-
-// function getCountDay(dateAdd) {
-//   return getCountWeek(dateAdd)*7;
-// }
-
-// function getCountWeek(dateAdd) {
-//   const date = dateAdd
-//   const oneJan = new Date(date.getFullYear(), 0, 1);
-//   const numberOfDays = Math.floor((date - oneJan) / (24 * 60 * 60 * 1000));
-
-//   return Math.ceil((date.getDay() + 1 + numberOfDays) / 7);
-// }
-
-function getDateInTh22(day) {
+function getDateInThDelta(day) {
   const date = new Date();
   date.setDate(date.getDate() + day);
   console.log(date.getDate());
 
   if (date.getDay() != 1) {
-    return getDateInTh22(day - 1);
+    return getDateInThDelta(day - 1);
   }
 
   return day;
@@ -253,7 +253,17 @@ function getDateInTh22(day) {
 function getDateInTh(day) {
   const date = new Date();
   date.setDate(date.getDate() + day);
-  return getCurrentDateInTh(date);
+
+  return {
+    dateInTh:
+      getCurrentDateInTh(date).day + "." + getCurrentDateInTh(date).month,
+    dateInTd:
+      getCurrentDateInTh(date).year +
+      "-" +
+      getCurrentDateInTh(date).month +
+      "-" +
+      getCurrentDateInTh(date).day,
+  };
 }
 
 function getCurrentDateInTh(date) {
@@ -265,6 +275,11 @@ function getCurrentDateInTh(date) {
     (date.getMonth() + 1).toString().length == 1
       ? "0" + (date.getMonth() + 1)
       : date.getMonth() + 1;
-  const dayMonth = day + "." + month;
-  return dayMonth;
+  const year = date.getFullYear().toString();
+
+  return {
+    day: day,
+    month: month,
+    year: year,
+  };
 }
