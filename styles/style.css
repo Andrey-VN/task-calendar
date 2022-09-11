@@ -1,5 +1,6 @@
 html {
   font-size: 14px;
+  box-sizing: border-box;
 }
 
 /* .container {
@@ -25,7 +26,7 @@ html {
 .calendar__logo {
   width: 40px;
   height: 100%;
-  margin: 5px 10px 5px 10px;
+  margin: 5px 12.5px 5px 12.5px;
 }
 
 .calendar__header {
@@ -164,6 +165,8 @@ html {
   border: 1px solid #ddd;
   vertical-align: top;
   padding: 0;
+  /* position: relative; */
+  /* height: 100%; */
   /* min-height: 100%; */
   
 }
@@ -177,23 +180,33 @@ html {
 
 
 .tbody-td__task {
-  /* height: 76px; */
+  /* position: absolute; */
   width: auto;
   background-color: #ede6da;
   border: 1px solid #b4b4af;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  /* float: left; */
+  /* clear: left;
+  display: inline; */
+  /* position: relative; */
+  /* display: flex;
+  flex-direction: column; */
+  /* justify-content: flex-start; */
   /* box-sizing: border-box; */
 }
 
 .tdbody-td__title {
-  margin-top: 1;
-  margin-bottom: 1;
+  margin-top: 5px;
+  margin-bottom: 5px;
   display: block;
-  /* height: 40px; */
+  text-align: left;
+  height: 20px;
+  word-wrap: normal;
+  white-space: nowrap;
+  
+  overflow: hidden;
 }
 .tasks {
+  /* display: none; */
   flex: 0 0 20%;
   background-color: #f0f6fb;
   border: 1px solid #ddd;

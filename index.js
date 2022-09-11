@@ -50,7 +50,7 @@ class Task {
 window.addEventListener("DOMContentLoaded", async () => {
   const dataTasks = await getListTasks(API_URL_LIST_TASKS);
   const dataUsers = await getListUsers(API_URL_LIST_USERS);
-  let createColumnsInTable = columnsDateCreate(7);
+  let createColumnsInTable = columnsDateCreate();
 
   const tasksNames = document.querySelector(".tasks__names");
   const calendarTbody = document.querySelector(".calendar__tbody");
@@ -125,7 +125,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   function showTasks(data) {
     const taskNames = document.querySelector(".tasks__names");
-    console.log(data);
+    // console.log(data);
     data.forEach((element) => {
       if(!element.executor) {
         taskNames.innerHTML += `
@@ -141,7 +141,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     let oneWeek = 0;
 
     return function (side) {
-      let dataObj = [];
+      let arrayDataObj = [];
       if (side == "right") {
         oneWeek += column;
       } else if (side == "left") {
@@ -151,19 +151,23 @@ window.addEventListener("DOMContentLoaded", async () => {
       } 
       const calendarTheadTR = document.querySelector(".calendar__thead-tr");
       calendarTheadTR.innerHTML = `<th class="calendar__thead-th calendar__thead-th--first"></th>`;
-      oneWeek = getDateInThDelta(oneWeek);
-      console.log(oneWeek);
+      if(column >=7){
+        oneWeek = getDateInThDelta(oneWeek);
+      }
+      
+      // console.log(oneWeek);
       for (let i = 0; i < column; i++) {
         calendarTheadTR.innerHTML += `<th class="calendar__thead-th">${
           getDateInTh(oneWeek + i).dateInTh
         }</th>`;
-        dataObj.push(getDateInTh(oneWeek + i).dateInTd);
+        arrayDataObj.push(getDateInTh(oneWeek + i));
       }
-      showUsersInTable(dataUsers, column, dataObj);
+      showUsersInTable(dataUsers, column, arrayDataObj);
     };
   }
 
-  function showUsersInTable(data, column = 14, dataObj) {
+  function showUsersInTable(data, column = 14, arrayDataObj) {
+    const milesInSeconds = 86400000;
     const calendarTbody = document.querySelector(".calendar__tbody");
     calendarTbody.innerHTML = "";
     data.forEach((user) => {
@@ -183,19 +187,50 @@ window.addEventListener("DOMContentLoaded", async () => {
           taskUser.push(e)
         }
       });
-      if (taskUser) console.log(taskUser);
+      // if (taskUser) console.log(taskUser);
 
       for (let i = 0; i < column; i++) {
         const tdUser = document.createElement("td");
         tdUser.classList.add("calendar__tbody-td")
         if (taskUser && taskUser.length > 0) {
-          taskUser.forEach(e => {
-            if(e.planStartDate === dataObj[i]) {
-              tdUser.innerHTML += `
-              <div class="tbody-td__task">
+          taskUser.forEach((e, index, array) => {
+            if(e.planStartDate === arrayDataObj[i].dateInTd) {
+              const div = document.createElement("div");
+              div.classList.add("tbody-td__task")
+              div.innerHTML += `
                 <h4 class="tdbody-td__title">${e.subject}</h4>
-              </div>
-            `;
+              `;
+              let deltaDay = (Number(Date.parse(e.planEndDate)) - Number(Date.parse(e.planStartDate)))/milesInSeconds;
+              // div.style.width = `${(100*deltaDay) + (deltaDay)}%`
+              if(deltaDay > 1) {
+                div.style.width = `calc(${100*deltaDay}% + ${(deltaDay - 3)}px)`
+              }
+              tdUser.appendChild(div);
+            } else if(Number(Date.parse(e.planStartDate)) < Number(Date.parse(arrayDataObj[i].dateInTd)) <= Number(Date.parse(e.planEndDate)) ) {
+              console.log(e.planStartDate)
+              console.log(arrayDataObj[i].dateInTd)
+              console.log(e.planEndDate)
+              console.log("///////////")
+              const div = document.createElement("div");
+              div.classList.add("tbody-td__task")
+              div.innerHTML += `
+                <h4 class="tdbody-td__title"></h4>
+              `;
+              div.style.opacity = "0"
+              tdUser.appendChild(div);
+            } else if(Number(Date.parse(arrayDataObj[0].dateInTd)) != Number(Date.parse(e.planStartDate)) && Number(Date.parse(arrayDataObj[0].dateInTd)) < Number(Date.parse(e.planEndDate)) ) {
+              console.log("dsds")
+              // const div = document.createElement("div");
+              // div.classList.add("tbody-td__task")
+              // div.innerHTML += `
+              //   <h4 class="tdbody-td__title">${e.subject}</h4>
+              // `;
+              // let deltaDay = (Number(Date.parse(arrayDataObj[0].dateInTd)) - Number(Date.parse(e.planStartDate)))/milesInSeconds;
+              // // div.style.width = `${(100*deltaDay) + (deltaDay)}%`
+              // if(deltaDay > 1) {
+              //   div.style.width = `calc(${100*deltaDay}% + ${(deltaDay - 3)}px)`
+              // }
+              // tdUser.appendChild(div);
             }
           })
         }
@@ -219,14 +254,20 @@ window.addEventListener("DOMContentLoaded", async () => {
   btnWeek.addEventListener("click", function() {
     let oneWeek = "One week";
     let twoWeeks = "Two weeks"
+    let threeDays = "Three days"
 
-    const oneWeekNumber = 14;
-    const twoWeeksNumber = 7;
-    if(this.innerText.toLowerCase() === oneWeek.toLowerCase()) {
+    const twoWeeksNumber = 14;
+    const oneWeekNumber = 7;
+    const threeDaysNumber = 3;
+
+    if(this.innerText.toLowerCase() === threeDays.toLowerCase()) {
       this.innerText = twoWeeks;
+      createColumnsInTable = columnsDateCreate(threeDaysNumber);
+    } else if (this.innerText.toLowerCase() === twoWeeks.toLowerCase()) {
+      this.innerText =  oneWeek;
       createColumnsInTable = columnsDateCreate(twoWeeksNumber);
-    } else {
-      this.innerText = oneWeek;
+    } else if (this.innerText.toLowerCase() === oneWeek.toLowerCase()) {
+      this.innerText = threeDays;
       createColumnsInTable = columnsDateCreate(oneWeekNumber);
     }
     createColumnsInTable();
@@ -241,7 +282,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 function getDateInThDelta(day) {
   const date = new Date();
   date.setDate(date.getDate() + day);
-  console.log(date.getDate());
+  // console.log(date.getDate());
 
   if (date.getDay() != 1) {
     return getDateInThDelta(day - 1);
@@ -263,6 +304,7 @@ function getDateInTh(day) {
       getCurrentDateInTh(date).month +
       "-" +
       getCurrentDateInTh(date).day,
+    date: getCurrentDateInTh(date)
   };
 }
 
