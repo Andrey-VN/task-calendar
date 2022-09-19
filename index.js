@@ -30,8 +30,17 @@ class Task {
 }
 
 window.addEventListener("DOMContentLoaded", async () => {
+  const page = document.querySelector(".container");
+  const load = document.querySelector(".app-root");
+  page.style.display = "none";
+  load.style.display = "flex";
+
   const dataTasks = await getListTasks(API_URL_LIST_TASKS);
   const dataUsers = await getListUsers(API_URL_LIST_USERS);
+
+  load.style.display = "none";
+  page.style.display = "block";
+
   let createColumnsInTable = columnsDateCreate();
 
   const tasksNames = document.querySelector(".tasks__names");
@@ -41,10 +50,35 @@ window.addEventListener("DOMContentLoaded", async () => {
   const btnLeft = document.querySelector(".btns__left");
   const btnRight = document.querySelector(".btns__right");
   const btnWeek = document.querySelector(".btns__week");
+  // const btnSearch = document.querySelector(".tasks__search-btn");
+  const searchText = document.querySelector(".tasks__search-text");
 
   tasksNames.addEventListener("dragstart", dragstartHandler);
   calendarTbody.addEventListener("dragover", dragoverHandler);
   calendarTbody.addEventListener("drop", dropHandler);
+  calendarTbody.addEventListener("dragenter", dragEnter);
+  calendarTbody.addEventListener("dragleave", dragLeave);
+
+  function dragEnter(ev) {
+    ev.preventDefault();
+    setTimeout(() => {
+      const trItem = ev.target.closest(".calendar__tbody-tr");
+      if (trItem && !trItem.classList.contains("calendar__tbody-td--enter")) {
+        for(let td of trItem.children) {
+          td.classList.add("calendar__tbody-td--enter")
+        }
+      }
+    }, 0);
+  }
+
+  function dragLeave(ev) {
+    const trItem = ev.target.closest(".calendar__tbody-tr");
+    if (trItem) {
+      for(let td of trItem.children) {
+        td.classList.remove("calendar__tbody-td--enter")
+      }
+    }
+  }
 
   function dragstartHandler(ev) {
     ev.dataTransfer.setData("id", ev.target.id);
@@ -57,27 +91,10 @@ window.addEventListener("DOMContentLoaded", async () => {
   function dropHandler(ev) {
     const data = ev.dataTransfer.getData("id");
     if (!data) return;
-
     const elem = document.getElementById(data);
-    let task = dataTasks.find((e) => e.id == elem.id);
-
-    let isTbodyTr = ev.target.classList.contains("calendar__tbody-tr");
-    if (!isTbodyTr) {
-      let elemParent = ev.target.parentNode;
-      while (elemParent.classList) {
-        isTbodyTr = elemParent.classList.contains("calendar__tbody-tr");
-        if (isTbodyTr) {
-          task.executor = elemParent.id
-          break;
-        }
-        elemParent = elemParent.parentNode;
-      }
-    } else {
-      task.executor = elem.id
-      
-    }
+    const task = dataTasks.find((e) => e.id == elem.id);
+    task.executor = ev.target.closest(".calendar__tbody-tr").id;
     createColumnsInTable();
-
     elem.parentNode.removeChild(elem);
   }
 
@@ -107,15 +124,18 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   function showTasks(data) {
     const taskNames = document.querySelector(".tasks__names");
-    data.forEach((element) => {
-      if(!element.executor) {
-        taskNames.innerHTML += `
-        <div class="tasks__name-one" draggable="true" id=${element.id}>
-          <h4 class="tasks__name-title">${element.subject}</h4>
-        </div>
-        `;
-      }
-    });
+    taskNames.innerHTML = "";
+    if (data) {
+      data.forEach((element) => {
+        if (!element.executor) {
+          taskNames.innerHTML += `
+          <div class="tasks__name-one" draggable="true" id=${element.id}>
+            <h4 class="tasks__name-title">${element.subject}</h4>
+          </div>
+          `;
+        }
+      });
+    }
   }
 
   function columnsDateCreate(column = 14) {
@@ -129,13 +149,13 @@ window.addEventListener("DOMContentLoaded", async () => {
         oneWeek -= column;
       } else if (side === "today") {
         oneWeek = 0;
-      } 
+      }
       const calendarTheadTR = document.querySelector(".calendar__thead-tr");
       calendarTheadTR.innerHTML = `<th class="calendar__thead-th calendar__thead-th--first"></th>`;
-      if(column >=7){
+      if (column >= 7) {
         oneWeek = getDateInThDelta(oneWeek);
       }
-      
+
       for (let i = 0; i < column; i++) {
         calendarTheadTR.innerHTML += `<th class="calendar__thead-th">${
           getDateInTh(oneWeek + i).dateInTh
@@ -163,42 +183,56 @@ window.addEventListener("DOMContentLoaded", async () => {
 
       let taskUser = [];
       dataTasks.forEach((e) => {
-        if(e.executor == user.id) {
-          taskUser.push(e)
+        if (e.executor == user.id) {
+          taskUser.push(e);
         }
       });
 
       for (let i = 0; i < column; i++) {
         const tdUser = document.createElement("td");
-        tdUser.classList.add("calendar__tbody-td")
+        tdUser.classList.add("calendar__tbody-td");
         if (taskUser && taskUser.length > 0) {
           taskUser.forEach((e, index, array) => {
-            if(e.planStartDate === arrayDataObj[i].dateInTd) {
+            if (e.planStartDate === arrayDataObj[i].dateInTd) {
               const div = document.createElement("div");
-              div.classList.add("tbody-td__task")
+              div.classList.add("tbody-td__task");
               div.innerHTML += `
                 <h4 class="tdbody-td__title">${e.subject}</h4>
               `;
-              let deltaDay = (Number(Date.parse(e.planEndDate)) - Number(Date.parse(e.planStartDate)))/milesInSeconds;
+              let deltaDay =
+                (Number(Date.parse(e.planEndDate)) -
+                  Number(Date.parse(e.planStartDate))) /
+                milesInSeconds;
               // div.style.width = `${(100*deltaDay) + (deltaDay)}%`
-              if(deltaDay > 1) {
-                div.style.width = `calc(${100*deltaDay}% + ${(deltaDay - 3)}px)`
+              if (deltaDay > 1) {
+                div.style.width = `calc(${100 * deltaDay}% + ${
+                  deltaDay - 3
+                }px)`;
               }
               tdUser.appendChild(div);
-            } else if(Number(Date.parse(e.planStartDate)) < Number(Date.parse(arrayDataObj[i].dateInTd)) <= Number(Date.parse(e.planEndDate)) ) {
-              console.log(e.planStartDate)
-              console.log(arrayDataObj[i].dateInTd)
-              console.log(e.planEndDate)
-              console.log("///////////")
+            } else if (
+              Number(Date.parse(e.planStartDate)) <
+              Number(Date.parse(arrayDataObj[i].dateInTd)) <=
+              Number(Date.parse(e.planEndDate))
+            ) {
+              // console.log(e.planStartDate);
+              // console.log(arrayDataObj[i].dateInTd);
+              // console.log(e.planEndDate);
+              // console.log("///////////");
               const div = document.createElement("div");
-              div.classList.add("tbody-td__task")
+              div.classList.add("tbody-td__task");
               div.innerHTML += `
                 <h4 class="tdbody-td__title"></h4>
               `;
-              div.style.opacity = "0"
+              div.style.visibility = "hidden";
               tdUser.appendChild(div);
-            } else if(Number(Date.parse(arrayDataObj[0].dateInTd)) != Number(Date.parse(e.planStartDate)) && Number(Date.parse(arrayDataObj[0].dateInTd)) < Number(Date.parse(e.planEndDate)) ) {
-              console.log("dsds")
+            } else if (
+              Number(Date.parse(arrayDataObj[0].dateInTd)) !=
+                Number(Date.parse(e.planStartDate)) &&
+              Number(Date.parse(arrayDataObj[0].dateInTd)) <
+                Number(Date.parse(e.planEndDate))
+            ) {
+              // console.log("dsds");
               // const div = document.createElement("div");
               // div.classList.add("tbody-td__task")
               // div.innerHTML += `
@@ -211,7 +245,7 @@ window.addEventListener("DOMContentLoaded", async () => {
               // }
               // tdUser.appendChild(div);
             }
-          })
+          });
         }
         trUser.appendChild(tdUser);
       }
@@ -219,7 +253,6 @@ window.addEventListener("DOMContentLoaded", async () => {
       calendarTbody.appendChild(trUser);
     });
   }
-
 
   btnToday.addEventListener("click", () => {
     createColumnsInTable("today");
@@ -230,20 +263,20 @@ window.addEventListener("DOMContentLoaded", async () => {
   btnRight.addEventListener("click", () => {
     createColumnsInTable("right");
   });
-  btnWeek.addEventListener("click", function() {
+  btnWeek.addEventListener("click", function () {
     let oneWeek = "One week";
-    let twoWeeks = "Two weeks"
-    let threeDays = "Three days"
+    let twoWeeks = "Two weeks";
+    let threeDays = "Three days";
 
     const twoWeeksNumber = 14;
     const oneWeekNumber = 7;
     const threeDaysNumber = 3;
 
-    if(this.innerText.toLowerCase() === threeDays.toLowerCase()) {
+    if (this.innerText.toLowerCase() === threeDays.toLowerCase()) {
       this.innerText = twoWeeks;
       createColumnsInTable = columnsDateCreate(threeDaysNumber);
     } else if (this.innerText.toLowerCase() === twoWeeks.toLowerCase()) {
-      this.innerText =  oneWeek;
+      this.innerText = oneWeek;
       createColumnsInTable = columnsDateCreate(twoWeeksNumber);
     } else if (this.innerText.toLowerCase() === oneWeek.toLowerCase()) {
       this.innerText = threeDays;
@@ -251,11 +284,21 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
     createColumnsInTable();
   });
+  searchText.addEventListener("keyup", () => {
+    const text = searchText.value.toLowerCase().trim();
+    let dataSearch = [];
+    dataTasks.forEach((d) => {
+      const textInArray = d.subject.toLowerCase().trim();
+      if (textInArray.indexOf(text) !== -1) {
+        dataSearch.push(d);
+      }
+    });
+    showTasks(dataSearch);
+  });
 
   //Порядок внизу не менять!!!!
   createColumnsInTable("today");
   showTasks(dataTasks);
-  
 });
 
 function getDateInThDelta(day) {
@@ -282,7 +325,7 @@ function getDateInTh(day) {
       getCurrentDateInTh(date).month +
       "-" +
       getCurrentDateInTh(date).day,
-    date: getCurrentDateInTh(date)
+    date: getCurrentDateInTh(date),
   };
 }
 

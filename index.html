@@ -6,31 +6,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="styles/normalize.css" />
     <link rel="stylesheet" href="styles/style.css" />
+    <link rel="stylesheet" href="styles/loader.css" />
     <title>Календарь заданий</title>
   </head>
   <body>
+    <div class="app-root">
+      <div id="gear-elma365">
+        <svg
+          viewBox="0 0 127 127"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M106.81 46.98V63.41L126.69 43.53C125.815 31.7085 120.505 20.6543 111.825 12.582C103.144 4.50968 91.734 0.0155697 79.8801 0H63.4102V20H79.8801C87.041 20 93.9085 22.8446 98.972 27.9081C104.035 32.9716 106.88 39.8392 106.88 47"
+            fill="#FABE00"
+          ></path>
+          <path
+            d="M79.8799 106.81H63.4199L83.2999 126.69C95.1355 125.826 106.206 120.517 114.29 111.829C122.373 103.141 126.871 91.7167 126.88 79.8497V63.4197H106.88V79.8497C106.88 87.0105 104.035 93.8781 98.9718 98.9416C93.9083 104.005 87.0408 106.85 79.8799 106.85"
+            fill="#5082E6"
+          ></path>
+          <path
+            d="M20.0302 79.8497V63.4197L0.140137 83.2997C1.01581 95.1281 6.33117 106.188 15.0202 114.261C23.7092 122.335 35.1294 126.824 46.9901 126.83H63.4201V106.83H46.9901C39.8293 106.83 32.9617 103.985 27.8983 98.9215C22.8348 93.8581 19.9901 86.9905 19.9901 79.8297"
+            fill="#5AD2FF"
+          ></path>
+          <path
+            d="M46.98 19.86H63.41L43.53 0C31.7017 0.875675 20.6417 6.19106 12.5684 14.8801C4.49513 23.5691 0.00548387 34.9893 0 46.85V63.28H20V46.83C20 39.6691 22.8447 32.8016 27.9081 27.7381C32.9716 22.6746 39.8392 19.83 47 19.83"
+            fill="#E62D32"
+          ></path>
+        </svg>
+      </div>
+    </div>
     <div class="container">
       <div class="calendar-tasks">
         <div class="calendar">
-        <div class="calendar__header">
-            <img src="img/logo.svg" alt="ELMA365" class="calendar__logo">
+          <div class="calendar__header">
+            <img src="img/logo.svg" alt="ELMA365" class="calendar__logo" />
             <div class="calendar__btn btns">
-               <button class="btns__one btns__week btn-navigation">One week</button>
-                <button class="btns__one btns__today btn-navigation">Today</button>
-                <button class="btns__one btns__left btn-navigation">Left</button>
-                <button class="btns__one btns__right btn-navigation">Right</button>
+              <button class="btns__one btns__week btn-navigation">
+                One week
+              </button>
+              <button class="btns__one btns__today btn-navigation">
+                Today
+              </button>
+              <button class="btns__one btns__left btn-navigation">Left</button>
+              <button class="btns__one btns__right btn-navigation">
+                Right
+              </button>
             </div>
-        </div>
+          </div>
           <table class="calendar__table">
-            <col class="calendar__first-col">
+            <col class="calendar__first-col" />
             <thead class="calendar__thead">
-              <tr class="calendar__thead-tr">
-
-              </tr>
+              <tr class="calendar__thead-tr"></tr>
             </thead>
-            <tbody class="calendar__tbody">
-
-            </tbody>
+            <tbody class="calendar__tbody"></tbody>
           </table>
         </div>
         <div class="tasks">
@@ -42,12 +71,10 @@
                 placeholder="Поиск"
                 class="tasks__search-text"
               />
-              <input type="button" class="tasks__search-btn" />
+              <!-- <input type="button" class="tasks__search-btn" /> убрал, т.к. поиск делаетс при отпускании кнопки в строке поиска--> 
             </form>
           </div>
-          <div class="tasks__names">
-
-          </div>
+          <div class="tasks__names"></div>
         </div>
       </div>
     </div>
