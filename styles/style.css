@@ -37,6 +37,7 @@ html {
   background-color: #f0f6fb;
   position: sticky;
   top: 0;
+  z-index: 90;
   /* border-bottom: #f0f6fb 5px solid; */
 }
 
@@ -96,6 +97,7 @@ html {
 
 .calendar__thead {
   position: sticky;
+  z-index: 10;
   top: 50px;
   background-color: #fff;
 }
@@ -167,7 +169,7 @@ html {
   height: 100%;
   bottom: 0;
   left: 0;
-  z-index: 1;
+  z-index: 0;
   background-color: rgba(87, 87, 173, 0.1);
 }
 
