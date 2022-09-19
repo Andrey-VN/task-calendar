@@ -4,12 +4,6 @@ const API_URL_LIST_TASKS =
   "https://varankin_dev.elma365.ru/api/extensions/2a38760e-083a-4dd0-aebc-78b570bfd3c7/script/tasks";
 
 class User {
-  id;
-  username;
-  surname;
-  firstName;
-  secondName;
-
   constructor(user) {
     this.id = user.id;
     this.username = user.username;
@@ -20,18 +14,6 @@ class User {
 }
 
 class Task {
-  id;
-  subject;
-  description;
-  creationAuthor;
-  executor;
-  creationDate;
-  planStartDate;
-  planEndDate;
-  endDate;
-  status;
-  order;
-
   constructor(task) {
     this.id = task.id;
     this.subject = task.subject;
@@ -125,7 +107,6 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   function showTasks(data) {
     const taskNames = document.querySelector(".tasks__names");
-    // console.log(data);
     data.forEach((element) => {
       if(!element.executor) {
         taskNames.innerHTML += `
@@ -155,7 +136,6 @@ window.addEventListener("DOMContentLoaded", async () => {
         oneWeek = getDateInThDelta(oneWeek);
       }
       
-      // console.log(oneWeek);
       for (let i = 0; i < column; i++) {
         calendarTheadTR.innerHTML += `<th class="calendar__thead-th">${
           getDateInTh(oneWeek + i).dateInTh
@@ -187,7 +167,6 @@ window.addEventListener("DOMContentLoaded", async () => {
           taskUser.push(e)
         }
       });
-      // if (taskUser) console.log(taskUser);
 
       for (let i = 0; i < column; i++) {
         const tdUser = document.createElement("td");
@@ -282,7 +261,6 @@ window.addEventListener("DOMContentLoaded", async () => {
 function getDateInThDelta(day) {
   const date = new Date();
   date.setDate(date.getDate() + day);
-  // console.log(date.getDate());
 
   if (date.getDay() != 1) {
     return getDateInThDelta(day - 1);
