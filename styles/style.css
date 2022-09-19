@@ -4,23 +4,24 @@ html {
 }
 
 .container {
-  /* max-width: 1440px;
-  margin: 0 auto; */
-  /* display: none; */
+  height: 99vh;
+  overflow: hidden;
+  border: 1px solid #ddd;
+  
 }
 
 .calendar-tasks {
   display: flex;
   justify-content: space-between;
   padding: 10px;
-  height: 100vh;
+  height: 100%;
 }
 
 .calendar {
   width: 100%;
   border: 1px solid #ddd;
   background-color: #fff;
-  /* height: 95vh; */
+  height: 100%;
   overflow-x: hidden;
 }
 
