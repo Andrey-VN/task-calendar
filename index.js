@@ -64,8 +64,8 @@ window.addEventListener("DOMContentLoaded", async () => {
     setTimeout(() => {
       const trItem = ev.target.closest(".calendar__tbody-tr");
       if (trItem && !trItem.classList.contains("calendar__tbody-td--enter")) {
-        for(let td of trItem.children) {
-          td.classList.add("calendar__tbody-td--enter")
+        for (let td of trItem.children) {
+          td.classList.add("calendar__tbody-td--enter");
         }
       }
     }, 0);
@@ -74,8 +74,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   function dragLeave(ev) {
     const trItem = ev.target.closest(".calendar__tbody-tr");
     if (trItem) {
-      for(let td of trItem.children) {
-        td.classList.remove("calendar__tbody-td--enter")
+      for (let td of trItem.children) {
+        td.classList.remove("calendar__tbody-td--enter");
       }
     }
   }
@@ -284,16 +284,22 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
     createColumnsInTable();
   });
-  searchText.addEventListener("keyup", () => {
-    const text = searchText.value.toLowerCase().trim();
-    let dataSearch = [];
-    dataTasks.forEach((d) => {
-      const textInArray = d.subject.toLowerCase().trim();
-      if (textInArray.indexOf(text) !== -1) {
-        dataSearch.push(d);
-      }
-    });
-    showTasks(dataSearch);
+  searchText.addEventListener("keyup", function () {
+    const max_chars = 15;
+    if (this.value.length > max_chars) {
+      this.value = this.value.substr(0, max_chars);
+      const text = this.value.toLowerCase().trim();
+      let dataSearch = [];
+      dataTasks.forEach((d) => {
+        const textInArray = d.subject.toLowerCase().trim();
+        if (textInArray.indexOf(text) !== -1) {
+          dataSearch.push(d);
+        }
+      });
+      showTasks(dataSearch);
+    } else {
+      this.value = this.value;
+    }
   });
 
   //Порядок внизу не менять!!!!
