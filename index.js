@@ -142,7 +142,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     let oneWeek = 0;
 
     return function (side) {
-      let arrayDataObj = [];
+      const arrayDataObj = [];
       if (side == "right") {
         oneWeek += column;
       } else if (side == "left") {
@@ -181,7 +181,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         </td>
       `;
 
-      let taskUser = [];
+      const taskUser = [];
       dataTasks.forEach((e) => {
         if (e.executor == user.id) {
           taskUser.push(e);
@@ -264,9 +264,9 @@ window.addEventListener("DOMContentLoaded", async () => {
     createColumnsInTable("right");
   });
   btnWeek.addEventListener("click", function () {
-    let oneWeek = "One week";
-    let twoWeeks = "Two weeks";
-    let threeDays = "Three days";
+    const oneWeek = "One week";
+    const twoWeeks = "Two weeks";
+    const threeDays = "Three days";
 
     const twoWeeksNumber = 14;
     const oneWeekNumber = 7;
@@ -285,21 +285,15 @@ window.addEventListener("DOMContentLoaded", async () => {
     createColumnsInTable();
   });
   searchText.addEventListener("keyup", function () {
-    const max_chars = 15;
-    if (this.value.length > max_chars) {
-      this.value = this.value.substr(0, max_chars);
-      const text = this.value.toLowerCase().trim();
-      let dataSearch = [];
-      dataTasks.forEach((d) => {
-        const textInArray = d.subject.toLowerCase().trim();
-        if (textInArray.indexOf(text) !== -1) {
-          dataSearch.push(d);
-        }
-      });
-      showTasks(dataSearch);
-    } else {
-      this.value = this.value;
-    }
+    const text = this.value.toLowerCase().trim();
+    const dataSearch = [];
+    dataTasks.forEach((d) => {
+      const textInArray = d.subject.toLowerCase().trim();
+      if (textInArray.indexOf(text) !== -1) {
+        dataSearch.push(d);
+      }
+    });
+    showTasks(dataSearch);
   });
 
   //Порядок внизу не менять!!!!
