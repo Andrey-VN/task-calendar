@@ -100,7 +100,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   async function getListUsers(url) {
     try {
-      const resp = await fetch(API_URL_LIST_USERS);
+      const resp = await fetch(url);
       const data = await resp.json();
       return data.map((element) => {
         return new User(element);
@@ -112,7 +112,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   async function getListTasks(url) {
     try {
-      const resp = await fetch(API_URL_LIST_TASKS);
+      const resp = await fetch(url);
       const data = await resp.json();
       return await data.map((element) => {
         return new Task(element);
