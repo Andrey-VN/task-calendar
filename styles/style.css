@@ -174,7 +174,7 @@ html {
 }
 
 .calendar__tbody-td--first {
-  background-color: #f5f5f5;
+  background-color: #f0f6fb;
   border: 1px solid #caced1;
   text-align: center;
 }
@@ -196,6 +196,9 @@ html {
 
 
 .tbody-td__task {
+  position: relative;
+  z-index: 9;
+
   width: auto;
   background-color: #ede6da;
   border: 1px solid #b4b4af;
@@ -321,6 +324,20 @@ html {
   color: #595959;
   margin: 5px;
   margin-left: 0;
+}
+
+.tasks__today {
+  position: relative;
+  z-index: 1;
+
+  background-color: #FFFADF;
+}
+
+.tasks__day-off {
+  position: relative;
+  z-index: 1;
+
+  background-color: #F3F3F3;
 }
 
 

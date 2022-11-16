@@ -174,7 +174,6 @@ window.addEventListener("DOMContentLoaded", async () => {
       const trUser = document.createElement("tr");
       trUser.classList.add("calendar__tbody-tr");
       trUser.id = user.id;
-
       trUser.innerHTML = `
         <td class="calendar__tbody-td calendar__tbody-td--first">
           ${user.surname} ${user.firstName}
@@ -191,6 +190,11 @@ window.addEventListener("DOMContentLoaded", async () => {
       for (let i = 0; i < column; i++) {
         const tdUser = document.createElement("td");
         tdUser.classList.add("calendar__tbody-td");
+
+        if(arrayDataObj[i].date.week == 6 || arrayDataObj[i].date.week == 0) tdUser.classList.add("tasks__day-off");
+        if(arrayDataObj[i].dateInTd == getDateInTh(0).dateInTd) tdUser.classList.add("tasks__today");
+        
+
         if (taskUser && taskUser.length > 0) {
           taskUser.forEach((e, index, array) => {
             if (e.planStartDate === arrayDataObj[i].dateInTd) {
@@ -340,9 +344,12 @@ function getCurrentDateInTh(date) {
       : date.getMonth() + 1;
   const year = date.getFullYear().toString();
 
+  const week = date.getDay().toString();
+
   return {
     day: day,
     month: month,
     year: year,
+    week: week
   };
 }
