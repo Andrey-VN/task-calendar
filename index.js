@@ -32,18 +32,22 @@ class Task {
 window.addEventListener("DOMContentLoaded", async () => {
     const page = document.querySelector(".container");
     const load = document.querySelector(".app-root");
-    page.style.display = "none";
-    load.style.display = "flex";
+
+    page.classList.add("display-none")
+    load.classList.add("display-flex")
 
     const [dataTasks, dataUsers] = await Promise.all([getListTasks(API_URL_LIST_TASKS), getListUsers(API_URL_LIST_USERS)])
 
-    load.style.display = "none";
-    page.style.display = "block";
+    page.classList.remove("display-none")
+    load.classList.remove("display-flex")
+
+    load.classList.add("display-none")
+    page.classList.add("display-block")
 
     let createColumnsInTable = columnsDateCreate();
 
     const tasksNames = document.querySelector(".tasks__names");
-    const calendarTbody = document.querySelector(".calendar__tbody");
+    const calendarTbody = document.querySelector(".table-flex__body");
 
     const btnToday = document.querySelector(".btns__today");
     const btnLeft = document.querySelector(".btns__left");
@@ -52,29 +56,29 @@ window.addEventListener("DOMContentLoaded", async () => {
     // const btnSearch = document.querySelector(".tasks__search-btn");
     const searchText = document.querySelector(".tasks__search-text");
 
-    //   tasksNames.addEventListener("dragstart", dragstartHandler);
-    //   calendarTbody.addEventListener("dragover", dragoverHandler);
-    //   calendarTbody.addEventListener("drop", dropHandler);
-    //   calendarTbody.addEventListener("dragenter", dragEnter);
-    //   calendarTbody.addEventListener("dragleave", dragLeave);
+      tasksNames.addEventListener("dragstart", dragstartHandler);
+      calendarTbody.addEventListener("dragover", dragoverHandler);
+      calendarTbody.addEventListener("drop", dropHandler);
+      calendarTbody.addEventListener("dragenter", dragEnter);
+      calendarTbody.addEventListener("dragleave", dragLeave);
 
     function dragEnter(ev) {
         ev.preventDefault();
         setTimeout(() => {
-            const trItem = ev.target.closest(".calendar__tbody-tr");
-            if (trItem && !trItem.classList.contains("calendar__tbody-td--enter")) {
+            const trItem = ev.target.closest(".table-flex__row");
+            if (trItem && !trItem.classList.contains("table-flex__cell--content-enter")) {
                 for (let td of trItem.children) {
-                    td.classList.add("calendar__tbody-td--enter");
+                    td.classList.add("table-flex__cell--content-enter");
                 }
             }
         }, 0);
     }
 
     function dragLeave(ev) {
-        const trItem = ev.target.closest(".calendar__tbody-tr");
+        const trItem = ev.target.closest(".table-flex__row");
         if (trItem) {
             for (let td of trItem.children) {
-                td.classList.remove("calendar__tbody-td--enter");
+                td.classList.remove("table-flex__cell--content-enter");
             }
         }
     }
@@ -92,7 +96,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         if (!data) return;
         const elem = document.getElementById(data);
         const task = dataTasks.find((e) => e.id == elem.id);
-        task.executor = ev.target.closest(".calendar__tbody-tr").id;
+        task.executor = ev.target.closest(".table-flex__row").id;
         createColumnsInTable();
         elem.parentNode.removeChild(elem);
     }
@@ -122,7 +126,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
 
     function showTasks(data) {
-        console.log("sdfds")
         const taskNames = document.querySelector(".tasks__names");
         taskNames.innerHTML = "";
         if (data) {
@@ -152,13 +155,13 @@ window.addEventListener("DOMContentLoaded", async () => {
             }
 
             const calendarTheadTR = document.querySelector(".table-flex__header");
-            calendarTheadTR.innerHTML = `<div class="table-flex__cell-header table-flex__cell table-flex__cell--first"></div>`;
+            calendarTheadTR.innerHTML = `<div class="table-flex__cell--header table-flex__cell table-flex__cell--first"></div>`;
             if (column >= 7) {
                 oneWeek = getDateInThDelta(oneWeek);
             }
 
             for (let i = 0; i < column; i++) {
-                calendarTheadTR.innerHTML += `<div class="table-flex__cell-header table-flex__cell">${getDateInTh(oneWeek + i).dateInTh
+                calendarTheadTR.innerHTML += `<div class="table-flex__cell--header table-flex__cell">${getDateInTh(oneWeek + i).dateInTh
                     }</div>`;
                 arrayDataObj.push(getDateInTh(oneWeek + i));
             }
@@ -180,7 +183,7 @@ window.addEventListener("DOMContentLoaded", async () => {
             trUser.id = user.id;
             trUser.innerHTML = `
         <div class="table-flex__cell table-flex__cell--first">
-            <div class="table-flex__cell-name-user">
+            <div class="table-flex__cell--name-user">
                 ${user.surname} ${user.firstName}
            </div>
         </div>
@@ -196,7 +199,7 @@ window.addEventListener("DOMContentLoaded", async () => {
             for (let i = 0; i < column; i++) {
                 const tdUser = document.createElement("div");
                 tdUser.classList.add("table-flex__cell");
-                tdUser.classList.add("table-flex__cell-content");
+                tdUser.classList.add("table-flex__cell--content");
 
                 if (arrayDataObj[i].date.week == 6 || arrayDataObj[i].date.week == 0) tdUser.classList.add("tasks__day-off");
                 if (arrayDataObj[i].dateInTd == getDateInTh(0).dateInTd) tdUser.classList.add("tasks__today");
