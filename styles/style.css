@@ -429,8 +429,6 @@ html {
 }
 
 .table-flex__cell--header {
-  padding: 4px;
-
   border-bottom: 1px solid #caced1;
   border-left: 1px solid #caced1;
   border-top: 1px solid #caced1;
@@ -441,7 +439,11 @@ html {
   word-wrap: break-word;
 }
 
-.table-flex__cell--name-user {
+.table-flex__cell--nested-block-name-user {
+  padding: 4px;
+}
+
+.table-flex__cell--nested-block-date {
   padding: 4px;
 }
 

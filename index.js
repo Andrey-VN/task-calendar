@@ -56,11 +56,11 @@ window.addEventListener("DOMContentLoaded", async () => {
     // const btnSearch = document.querySelector(".tasks__search-btn");
     const searchText = document.querySelector(".tasks__search-text");
 
-      tasksNames.addEventListener("dragstart", dragstartHandler);
-      calendarTbody.addEventListener("dragover", dragoverHandler);
-      calendarTbody.addEventListener("drop", dropHandler);
-      calendarTbody.addEventListener("dragenter", dragEnter);
-      calendarTbody.addEventListener("dragleave", dragLeave);
+    tasksNames.addEventListener("dragstart", dragstartHandler);
+    calendarTbody.addEventListener("dragover", dragoverHandler);
+    calendarTbody.addEventListener("drop", dropHandler);
+    calendarTbody.addEventListener("dragenter", dragEnter);
+    calendarTbody.addEventListener("dragleave", dragLeave);
 
     function dragEnter(ev) {
         ev.preventDefault();
@@ -161,8 +161,12 @@ window.addEventListener("DOMContentLoaded", async () => {
             }
 
             for (let i = 0; i < column; i++) {
-                calendarTheadTR.innerHTML += `<div class="table-flex__cell--header table-flex__cell">${getDateInTh(oneWeek + i).dateInTh
-                    }</div>`;
+                calendarTheadTR.innerHTML += 
+                `<div class="table-flex__cell--header table-flex__cell">
+                    <div class="table-flex__cell--nested-block-date">
+                        ${getDateInTh(oneWeek + i).dateInTh}
+                    <div>
+                </div>`;
                 arrayDataObj.push(getDateInTh(oneWeek + i));
             }
 
@@ -183,7 +187,7 @@ window.addEventListener("DOMContentLoaded", async () => {
             trUser.id = user.id;
             trUser.innerHTML = `
         <div class="table-flex__cell table-flex__cell--first">
-            <div class="table-flex__cell--name-user">
+            <div class="table-flex__cell--nested-block-name-user">
                 ${user.surname} ${user.firstName}
            </div>
         </div>
