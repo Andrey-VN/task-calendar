@@ -7,7 +7,7 @@ html {
   height: 99vh;
   overflow: hidden;
   border: 1px solid #ddd;
-  
+
 }
 
 .calendar-tasks {
@@ -61,7 +61,8 @@ html {
   border-radius: 4px;
   padding: 7px 14px;
 }
-.btns__week{
+
+.btns__week {
   margin-right: 100px;
 }
 
@@ -132,12 +133,13 @@ html {
 .calendar__first-col {
   width: 60px;
 }
+
 .calendar__tbody-tr {
   break-inside: avoid;
   padding: 0;
   margin: 0;
   font-size: 12px;
-  
+
   height: 80px;
   color: #252525;
 }
@@ -145,6 +147,7 @@ html {
 .calendar__tbody-td--enter {
   position: relative;
 }
+
 .calendar__tbody-td--enter::after {
   content: "";
   position: absolute;
@@ -168,7 +171,7 @@ html {
   border: 1px solid #ddd;
   vertical-align: top;
   padding: 0;
-  
+
 }
 
 .tbody-td {
@@ -195,9 +198,10 @@ html {
   text-align: left;
   height: 20px;
   word-wrap: normal;
-  white-space: nowrap; 
+  white-space: nowrap;
   overflow: hidden;
 }
+
 .tasks {
   flex: 0 0 20%;
   background-color: #f0f6fb;
@@ -268,6 +272,7 @@ html {
   border-bottom-left-radius: 4px; */
   border-radius: 4px;
 }
+
 .tasks__search-text:focus {
   outline: none;
 }
@@ -346,12 +351,13 @@ html {
   }
 }
 
+
+/* ////////////////////////////////////////////////////// */
 /* table-flex  */
 
 .table-flex {
   display: flex;
   flex-direction: column;
-  /* justify-content: left; */
 
   height: 100%;
   overflow-x: hidden;
@@ -376,6 +382,7 @@ html {
 .table-flex__row {
   display: flex;
   flex-direction: row;
+
   border-bottom: 1px solid #caced1;
 }
 
@@ -383,35 +390,46 @@ html {
   display: flex;
   flex-direction: row;
   justify-content: left;
+
   position: sticky;
   top: 0;
+
   background-color: white;
-  /* width: 100%; */
+  z-index: 99;
 }
 
 .table-flex__cell {
-  padding: 4px;
   border-left: 1px solid #caced1;
-  
-  word-wrap: break-word;
+
+  font-size: 12px;
+  text-align: center;
 
   flex-grow: 1;
   flex-shrink: 0;
-  width: 0%;
+  width: 0;
 }
 
-.table-flex__cell:first-child {
-  background-color: #f0f6fb67;
+
+.table-flex__cell--first {
+  word-wrap: break-word;
   text-align: center;
+
+  background-color: #f0f6fb67;
 }
 
-
-
-.table-flex__header-cell {
+.table-flex__cell-header {
   padding: 4px;
 
   border-bottom: 1px solid #caced1;
   border-left: 1px solid #caced1;
   border-top: 1px solid #caced1;
-  
+}
+
+.table-flex__cell-content {
+  min-height: 60px;
+  word-wrap: break-word;
+}
+
+.table-flex__cell-name-user {
+  padding: 4px;
 }
