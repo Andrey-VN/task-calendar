@@ -239,6 +239,7 @@ html {
   margin: 0;
   padding: 5px;
 
+  text-align: start;
 
   display: block;
   min-height: 15px;
@@ -382,12 +383,62 @@ html {
 
 @media (max-width: 768px) {
 
-  .calendar__btn {
-    gap: 10px;
+  .calendar__header {
+    justify-content: flex-start;
   }
+
+  .calendar__btn {
+    justify-content: center;
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+    width: 100%;
+  }
+
+  .btns__week {
+    white-space: nowrap;
+  }
+
+  .btns__week-title {
+    font-size: 20px;
+  }
+
+  .btns__container-1 {
+    justify-content: space-between;
+    width: 100%;
+  }
+  .btns__container-2 {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .btns__right {
+    margin-right: 0;
+  }
+  
+  .btn-navigation {
+    width: 50%;
+  }
+
 }
 
-@media (max-width: 668px) {
+
+@media (max-width: 375px) {
+  .btn-navigation {
+    width: 60%;
+  }
+
+  .btns__week-title {
+    font-size: 12px;
+  }
+
+  .btn-navigation {
+    font-size: 12px
+  }
+}
+/* @media (max-width: 668px) {
   .calendar__btn {
     justify-content: center;
     align-items: center;
@@ -402,7 +453,7 @@ html {
   .btns__right {
     margin-right: 0;
   }
-}
+} */
 
 /* Стили отображения */
 
