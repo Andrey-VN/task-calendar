@@ -57,6 +57,8 @@ window.addEventListener("DOMContentLoaded", async () => {
     const searchText = document.querySelector(".tasks__search-text");
 
     tasksNames.addEventListener("dragstart", dragstartHandler);
+    calendarTbody.addEventListener("dragstart", dragstartHandlerInTable);
+
     calendarTbody.addEventListener("dragover", dragoverHandler);
     calendarTbody.addEventListener("drop", dropHandler);
     calendarTbody.addEventListener("dragenter", dragEnter);
@@ -85,6 +87,12 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     function dragstartHandler(ev) {
         ev.dataTransfer.setData("id", ev.target.id);
+        ev.dataTransfer.setData("data", "tasks");
+    }
+
+    function dragstartHandlerInTable(ev) {
+        ev.dataTransfer.setData("id", ev.target.closest(".table-flex__row").id);
+        ev.dataTransfer.setData("data", "table");
     }
 
     function dragoverHandler(ev) {
@@ -92,13 +100,29 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
 
     function dropHandler(ev) {
-        const data = ev.dataTransfer.getData("id");
-        if (!data) return;
-        const elem = document.getElementById(data);
-        const task = dataTasks.find((e) => e.id == elem.id);
-        task.executor = ev.target.closest(".table-flex__row").id;
-        createColumnsInTable();
-        elem.parentNode.removeChild(elem);
+
+        const id = ev.dataTransfer.getData("id");
+        const data = ev.dataTransfer.getData("data");
+
+        if (!id && !data) return;
+
+        if (data === "tasks") {
+            const elem = document.getElementById(id);
+            const task = dataTasks.find((e) => e.id === elem.id);
+
+            task.executor = ev.target.closest(".table-flex__row").id;
+
+            createColumnsInTable();
+            elem.parentNode.removeChild(elem);
+        } else if (data === "table") {
+            const task = dataTasks.find((e) => e.executor.toString() === id);
+            task.executor = ev.target.closest(".table-flex__row").id;
+
+           
+
+            createColumnsInTable();
+            elem.parentNode.removeChild(elem);
+        }
     }
 
     async function getListUsers(url) {
@@ -131,11 +155,15 @@ window.addEventListener("DOMContentLoaded", async () => {
         if (data) {
             data.forEach((element) => {
                 if (!element.executor) {
-                    taskNames.innerHTML += `
-          <div class="tasks__name-one" draggable="true" id=${element.id}>
-            <h4 class="tasks__name-title">${element.subject}</h4>
-          </div>
-          `;
+
+                    // Cоздания задания в списке задач
+                    const taskInBacklogTemp = document.getElementById("task-in-backlog");
+                    const tasksNameOne = taskInBacklogTemp.content.cloneNode(true).querySelector(".tasks__name-one");
+
+                    tasksNameOne.id = element.id;
+                    tasksNameOne.querySelector(".tasks__name-title").textContent = element.subject;
+
+                    taskNames.appendChild(tasksNameOne)
                 }
             });
         }
@@ -146,9 +174,9 @@ window.addEventListener("DOMContentLoaded", async () => {
 
         return function (side) {
             const arrayDataObj = [];
-            if (side == "right") {
+            if (side === "right") {
                 oneWeek += column;
-            } else if (side == "left") {
+            } else if (side === "left") {
                 oneWeek -= column;
             } else if (side === "today") {
                 oneWeek = 0;
@@ -161,8 +189,8 @@ window.addEventListener("DOMContentLoaded", async () => {
             }
 
             for (let i = 0; i < column; i++) {
-                calendarTheadTR.innerHTML += 
-                `<div class="table-flex__cell--header table-flex__cell">
+                calendarTheadTR.innerHTML +=
+                    `<div class="table-flex__cell--header table-flex__cell">
                     <div class="table-flex__cell--nested-block-date">
                         ${getDateInTh(oneWeek + i).dateInTh}
                     <div>
@@ -182,26 +210,23 @@ window.addEventListener("DOMContentLoaded", async () => {
 
 
         data.forEach((user) => {
-            const trUser = document.createElement("div");
-            trUser.classList.add("table-flex__row");
-            trUser.id = user.id;
-            trUser.innerHTML = `
-        <div class="table-flex__cell table-flex__cell--first">
-            <div class="table-flex__cell--nested-block-name-user">
-                ${user.surname} ${user.firstName}
-           </div>
-        </div>
-      `;
+
+            //Создание строки таблицы с именеем пользователя в первой ячейке
+            const trUserTemplate = document.getElementById("tr-in-table");
+            const trUser = trUserTemplate.content.cloneNode(true).querySelector(".table-flex__row");
+            const nameUser = trUser.querySelector(".table-flex__cell--nested-block-name-user");
+            nameUser.textContent = `${user.surname} ${user.firstName}`;
 
             const taskUser = [];
             dataTasks.forEach((e) => {
-                if (e.executor == user.id) {
+                if (e.executor !== null && (e.executor.toString() === user.id.toString())) {
                     taskUser.push(e);
                 }
             });
 
             for (let i = 0; i < column; i++) {
                 const tdUser = document.createElement("div");
+                trUser.id = user.id;
                 tdUser.classList.add("table-flex__cell");
                 tdUser.classList.add("table-flex__cell--content");
 
@@ -212,16 +237,21 @@ window.addEventListener("DOMContentLoaded", async () => {
                 if (taskUser && taskUser.length > 0) {
                     taskUser.forEach((e, index, array) => {
                         if (e.planStartDate === arrayDataObj[i].dateInTd) {
+
                             const div = document.createElement("div");
                             div.classList.add("tbody-td__task");
-                            div.innerHTML += `
-                <h4 class="tdbody-td__title">${e.subject}</h4>
-              `;
+                            div.setAttribute("draggable", "true")
+
+                            const title = document.createElement("h4");
+                            title.classList.add("tdbody-td__title");
+                            title.textContent = e.subject;
+
+                            div.appendChild(title)
+
                             let deltaDay =
                                 (Number(Date.parse(e.planEndDate)) -
                                     Number(Date.parse(e.planStartDate))) /
                                 milesInSeconds;
-                            // div.style.width = `${(100*deltaDay) + (deltaDay)}%`
                             if (deltaDay > 1) {
                                 div.style.width = `calc(${100 * deltaDay}% + ${deltaDay - 3
                                     }px)`;
@@ -234,9 +264,13 @@ window.addEventListener("DOMContentLoaded", async () => {
                         ) {
                             const div = document.createElement("div");
                             div.classList.add("tbody-td__task");
-                            div.innerHTML += `
-                <h4 class="tdbody-td__title"></h4>
-              `;
+                            div.setAttribute("draggable", "true")
+
+                            const title = document.createElement("h4");
+                            title.classList.add("tdbody-td__title");
+
+                            div.appendChild(title)
+
                             div.style.visibility = "hidden";
                             tdUser.appendChild(div);
                         } else if (
@@ -274,13 +308,13 @@ window.addEventListener("DOMContentLoaded", async () => {
         const threeDaysNumber = 3;
 
         if (this.innerText.toLowerCase() === threeDays.toLowerCase()) {
-            this.innerText = twoWeeks;
+            this.textContent = twoWeeks;
             createColumnsInTable = columnsDateCreate(threeDaysNumber);
         } else if (this.innerText.toLowerCase() === twoWeeks.toLowerCase()) {
-            this.innerText = oneWeek;
+            this.textContent = oneWeek;
             createColumnsInTable = columnsDateCreate(twoWeeksNumber);
         } else if (this.innerText.toLowerCase() === oneWeek.toLowerCase()) {
-            this.innerText = threeDays;
+            this.textContent = threeDays;
             createColumnsInTable = columnsDateCreate(oneWeekNumber);
         }
         createColumnsInTable();
@@ -332,11 +366,11 @@ function getDateInTh(day) {
 
 function getCurrentDateInTh(date) {
     const day =
-        date.getDate().toString().length == 1
+        date.getDate().toString().length === 1
             ? "0" + date.getDate()
             : date.getDate();
     const month =
-        (date.getMonth() + 1).toString().length == 1
+        (date.getMonth() + 1).toString().length === 1
             ? "0" + (date.getMonth() + 1)
             : date.getMonth() + 1;
     const year = date.getFullYear().toString();

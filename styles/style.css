@@ -186,16 +186,18 @@ html {
   width: auto;
   background-color: #ede6da;
   border: 1px solid #b4b4af;
+
+  cursor: all-scroll;
 }
 
 .tdbody-td__title {
-  margin-top: 5px;
-  margin-bottom: 5px;
+  margin: 0;
+  padding: 5px;
+
+
   display: block;
-  text-align: left;
-  height: 20px;
-  word-wrap: normal;
-  white-space: nowrap;
+  min-height: 15px;
+
   overflow: hidden;
 }
 
