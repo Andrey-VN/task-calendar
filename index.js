@@ -30,6 +30,7 @@ class Task {
 }
 
 window.addEventListener("DOMContentLoaded", async () => {
+
     const page = document.querySelector(".container");
     const load = document.querySelector(".app-root");
 
@@ -107,6 +108,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         if (!id && !data) return;
 
         if (data === "tasks") {
+            console.log("tasks")
             const elem = document.getElementById(id);
             const task = dataTasks.find((e) => e.id === elem.id);
 
@@ -115,13 +117,13 @@ window.addEventListener("DOMContentLoaded", async () => {
             createColumnsInTable();
             elem.parentNode.removeChild(elem);
         } else if (data === "table") {
-            const task = dataTasks.find((e) => e.executor.toString() === id);
+            console.log(id)
+            console.log(dataTasks)
+            const task = dataTasks.find((e) => e.executor !== null && (e.executor.toString() === id));
             task.executor = ev.target.closest(".table-flex__row").id;
 
-           
-
             createColumnsInTable();
-            elem.parentNode.removeChild(elem);
+            // elem.parentNode.removeChild(elem);
         }
     }
 
@@ -298,7 +300,16 @@ window.addEventListener("DOMContentLoaded", async () => {
     btnRight.addEventListener("click", () => {
         createColumnsInTable("right");
     });
-    btnWeek.addEventListener("click", function () {
+
+    const clickInCalendarView = ChangeInCalendarViewBtn();
+    clickInCalendarView.changeResizeInCalendarView();
+    btnWeek.addEventListener("click", clickInCalendarView.changeClickInCalendarViewBtn);
+    window.addEventListener('resize', clickInCalendarView.changeResizeInCalendarView);
+
+    function ChangeInCalendarViewBtn() {
+
+        let stateBtn;
+
         const oneWeek = "One week";
         const twoWeeks = "Two weeks";
         const threeDays = "Three days";
@@ -307,18 +318,87 @@ window.addEventListener("DOMContentLoaded", async () => {
         const oneWeekNumber = 7;
         const threeDaysNumber = 3;
 
-        if (this.innerText.toLowerCase() === threeDays.toLowerCase()) {
-            this.textContent = twoWeeks;
-            createColumnsInTable = columnsDateCreate(threeDaysNumber);
-        } else if (this.innerText.toLowerCase() === twoWeeks.toLowerCase()) {
-            this.textContent = oneWeek;
-            createColumnsInTable = columnsDateCreate(twoWeeksNumber);
-        } else if (this.innerText.toLowerCase() === oneWeek.toLowerCase()) {
-            this.textContent = threeDays;
-            createColumnsInTable = columnsDateCreate(oneWeekNumber);
+        const weekTitle = document.querySelector(".btns__week-title")
+
+        return {
+            changeClickInCalendarViewBtn: function() {
+
+                console.log(stateBtn)
+
+                if (stateBtn === twoWeeksNumber) {
+                    stateBtn = oneWeekNumber;
+                    weekTitle.textContent = oneWeek;
+                    createColumnsInTable = columnsDateCreate(oneWeekNumber);
+                } else if (stateBtn === oneWeekNumber) {
+                    stateBtn = threeDaysNumber;
+                    weekTitle.textContent = threeDays;
+                    createColumnsInTable = columnsDateCreate(threeDaysNumber);
+                } else if (stateBtn === threeDaysNumber) {
+                    stateBtn = twoWeeksNumber;
+                    weekTitle.textContent = twoWeeks;
+                    createColumnsInTable = columnsDateCreate(twoWeeksNumber);
+                }
+
+                if (!stateBtn) {
+                    stateBtn = twoWeeksNumber;
+                    weekTitle.textContent = twoWeeks;
+                    createColumnsInTable = columnsDateCreate(twoWeeksNumber);
+                }
+
+                createColumnsInTable();
+            },
+            changeResizeInCalendarView: function() {
+
+                const clientWidth = document.documentElement.clientWidth;
+
+                if (clientWidth > 992) {
+                    stateBtn = twoWeeksNumber;
+                    weekTitle.textContent = twoWeeks;
+                    createColumnsInTable = columnsDateCreate(twoWeeksNumber)
+                } else if (clientWidth <= 992 && clientWidth > 768) {
+                    stateBtn = oneWeekNumber;
+                    weekTitle.textContent = oneWeek;
+                    createColumnsInTable = columnsDateCreate(oneWeekNumber)
+                } else if (clientWidth <= 768) {
+                    stateBtn = threeDaysNumber;
+                    weekTitle.textContent = threeDays;
+                    createColumnsInTable = columnsDateCreate(threeDaysNumber)
+                }
+                createColumnsInTable();
+            }
         }
-        createColumnsInTable();
-    });
+    }
+
+    
+
+    // function changeResizeInCalendarView() {
+    //     const clientWidth = document.documentElement.clientWidth;
+
+    //     const oneWeek = "One week";
+    //     const twoWeeks = "Two weeks";
+    //     const threeDays = "Three days";
+
+    //     const twoWeeksNumber = 14;
+    //     const oneWeekNumber = 7;
+    //     const threeDaysNumber = 3;
+
+    //     const weekTitle = document.querySelector(".btns__week-title")
+
+
+
+    //     if (clientWidth > 992) {
+    //         weekTitle.textContent = twoWeeks;
+    //         createColumnsInTable = columnsDateCreate(twoWeeksNumber)
+    //     } else if (clientWidth <= 992 && clientWidth > 768) {
+    //         weekTitle.textContent = oneWeek;
+    //         createColumnsInTable = columnsDateCreate(oneWeekNumber)
+    //     } else if (clientWidth <= 768) {
+    //         weekTitle.textContent = threeDays;
+    //         createColumnsInTable = columnsDateCreate(threeDaysNumber)
+    //     }
+    //     createColumnsInTable();
+    // }
+
     searchText.addEventListener("keyup", function () {
         const text = this.value.toLowerCase().trim();
         const dataSearch = [];
@@ -384,3 +464,5 @@ function getCurrentDateInTh(date) {
         week: week
     };
 }
+
+
