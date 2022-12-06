@@ -321,7 +321,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         const weekTitle = document.querySelector(".btns__week-title")
 
         return {
-            changeClickInCalendarViewBtn: function() {
+            changeClickInCalendarViewBtn: function () {
 
                 console.log(stateBtn)
 
@@ -339,15 +339,9 @@ window.addEventListener("DOMContentLoaded", async () => {
                     createColumnsInTable = columnsDateCreate(twoWeeksNumber);
                 }
 
-                if (!stateBtn) {
-                    stateBtn = twoWeeksNumber;
-                    weekTitle.textContent = twoWeeks;
-                    createColumnsInTable = columnsDateCreate(twoWeeksNumber);
-                }
-
                 createColumnsInTable();
             },
-            changeResizeInCalendarView: function() {
+            changeResizeInCalendarView: function () {
 
                 const clientWidth = document.documentElement.clientWidth;
 
