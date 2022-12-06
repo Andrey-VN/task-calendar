@@ -36,10 +36,7 @@ html {
   display: flex;
   justify-content: space-between;
   background-color: #f0f6fb;
-  /* position: sticky;
-  top: 0; */
   z-index: 90;
-  /* border-bottom: #f0f6fb 5px solid; */
 }
 
 .calendar__btn {
@@ -56,7 +53,7 @@ html {
 
 .btns__container-1 {
   display: flex;
-  justify-content: left;
+  justify-content: space-around;
 
   border: 1px solid #1e6599;
 
@@ -64,11 +61,12 @@ html {
   padding: 7px 14px;
 
   width: 200px;
+  gap: 10px;
 }
 
 .btns__container-2 {
   display: flex;
-  justify-content: left;
+  justify-content: space-around;
 
   flex-wrap: nowrap;
 
@@ -78,6 +76,7 @@ html {
   padding: 7px 14px;
 
   width: 200px;
+  gap: 10px;
 }
 
 .btns__week {}
@@ -93,7 +92,7 @@ html {
 }
 
 .btns__one {
-  margin-right: 10px;
+  /* margin-right: 10px; */
   height: 32px;
 }
 
@@ -215,14 +214,6 @@ html {
   padding: 0;
 
 }
-
-.tbody-td {
-  /* display: inline-block; */
-  /* flex-direction: column;
-  justify-content: flex-start; */
-  /* height: 40px; */
-}
-
 
 .tbody-td__task {
   position: relative;
@@ -438,22 +429,6 @@ html {
     font-size: 12px
   }
 }
-/* @media (max-width: 668px) {
-  .calendar__btn {
-    justify-content: center;
-    align-items: center;
-
-    flex-wrap: wrap;
-  }
-
-  .btns__container-2 {
-    justify-content: center;
-  }
-
-  .btns__right {
-    margin-right: 0;
-  }
-} */
 
 /* Стили отображения */
 

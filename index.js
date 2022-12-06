@@ -369,36 +369,6 @@ window.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    
-
-    // function changeResizeInCalendarView() {
-    //     const clientWidth = document.documentElement.clientWidth;
-
-    //     const oneWeek = "One week";
-    //     const twoWeeks = "Two weeks";
-    //     const threeDays = "Three days";
-
-    //     const twoWeeksNumber = 14;
-    //     const oneWeekNumber = 7;
-    //     const threeDaysNumber = 3;
-
-    //     const weekTitle = document.querySelector(".btns__week-title")
-
-
-
-    //     if (clientWidth > 992) {
-    //         weekTitle.textContent = twoWeeks;
-    //         createColumnsInTable = columnsDateCreate(twoWeeksNumber)
-    //     } else if (clientWidth <= 992 && clientWidth > 768) {
-    //         weekTitle.textContent = oneWeek;
-    //         createColumnsInTable = columnsDateCreate(oneWeekNumber)
-    //     } else if (clientWidth <= 768) {
-    //         weekTitle.textContent = threeDays;
-    //         createColumnsInTable = columnsDateCreate(threeDaysNumber)
-    //     }
-    //     createColumnsInTable();
-    // }
-
     searchText.addEventListener("keyup", function () {
         const text = this.value.toLowerCase().trim();
         const dataSearch = [];
