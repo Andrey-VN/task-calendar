@@ -51,28 +51,15 @@ html {
   gap: 100px;
 }
 
-.btns__container-1 {
-  display: flex;
-  justify-content: space-around;
-
-  border: 1px solid #1e6599;
-
-  border-radius: 4px;
-  padding: 7px 14px;
-
-  width: 200px;
-  gap: 10px;
-}
-
-.btns__container-2 {
+.btns__container {
   display: flex;
   justify-content: space-around;
 
   flex-wrap: nowrap;
 
   border: 1px solid #1e6599;
-
   border-radius: 4px;
+  
   padding: 7px 14px;
 
   width: 200px;
@@ -92,7 +79,6 @@ html {
 }
 
 .btns__one {
-  /* margin-right: 10px; */
   height: 32px;
 }
 
@@ -396,12 +382,8 @@ html {
     font-size: 20px;
   }
 
-  .btns__container-1 {
+  .btns__container {
     justify-content: space-between;
-    width: 100%;
-  }
-  .btns__container-2 {
-    justify-content: center;
     width: 100%;
   }
 
