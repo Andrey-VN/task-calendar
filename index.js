@@ -73,43 +73,74 @@ function getListTasksView(data) {
 //Функция инициализации страницы///
 async function onInit() {
 
+    //Отображаем лоадер и прячем весь основной контент
     const page = document.querySelector(".container");
     const load = document.querySelector(".app-root");
 
     page.classList.add("display-none")
     load.classList.add("display-flex")
 
+    //Получаем данные
     const [dataTasksDate, dataUsersDate] = await Promise.all([getListTasksDate(API_URL_LIST_TASKS), getListUsersDate(API_URL_LIST_USERS)])
     const [dataTasks, dataUsers] = [getListTasksView(dataTasksDate), getListUsersView(dataUsersDate)]
 
     page.classList.remove("display-none")
     load.classList.remove("display-flex")
 
+    //Прячем лоадер и отображаем весь основной контент
     load.classList.add("display-none")
     page.classList.add("display-block")
 
+    
     let createColumnsInTable = columnsDateCreate();
 
     const tasksNames = document.querySelector(".tasks__names");
     const calendarTbody = document.querySelector(".table-flex__body");
 
+    //Получение узлов элементов кнопок
     const btnToday = document.querySelector(".btns__today");
     const btnLeft = document.querySelector(".btns__left");
     const btnRight = document.querySelector(".btns__right");
-    const btnWeek = document.querySelector(".btns__week");
-    // const btnSearch = document.querySelector(".tasks__search-btn");
+
+    btnToday.addEventListener("click", () => {
+        createColumnsInTable("today");
+    });
+    btnLeft.addEventListener("click", () => {
+        createColumnsInTable("left");
+    });
+    btnRight.addEventListener("click", () => {
+        createColumnsInTable("right");
+    });
+
+
+    //Получение узла строки поиска задач в бэклоге
     const searchText = document.querySelector(".tasks__search-text");
 
+    searchText.addEventListener("keyup", function () {
+        const text = this.value.toLowerCase().trim();
+        const dataSearch = [];
+        dataTasks.forEach((d) => {
+            const textInArray = d.subject.toLowerCase().trim();
+            if (textInArray.indexOf(text) !== -1) {
+                dataSearch.push(d);
+            }
+        });
+        showTasks(dataSearch);
+    });
+
+
+    //Слушатели событий на перетаскивания задач
     tasksNames.addEventListener("dragstart", dragstartHandler);
     calendarTbody.addEventListener("dragstart", dragstartHandlerInTable, true);
-
     calendarTbody.addEventListener("dragover", dragoverHandler);
     calendarTbody.addEventListener("drop", dropHandler);
     calendarTbody.addEventListener("dragenter", dragEnter);
     calendarTbody.addEventListener("dragleave", dragLeave);
 
+    //Обработчики событий на перетаскивания задач
     function dragEnter(ev) {
         ev.preventDefault();
+        //таймаут для ожидания выполнения основного кода (чтобы обработчик выполнялся в порядке очереди с обработчиком dragLeave)
         setTimeout(() => {
             const trItem = ev.target.closest(".table-flex__row");
             if (trItem && !trItem.classList.contains("table-flex__cell--content-enter")) {
@@ -129,13 +160,12 @@ async function onInit() {
         }
     }
 
-    function dragstartHandler(ev) {
+    function dragstartHandler(ev) { //Обработчик со стартом перетаскивания задач из беклога
         ev.dataTransfer.setData("id", ev.target.getAttribute("data-id-task"));
-        ev.dataTransfer.setData("data", "tasks");
-        
+        ev.dataTransfer.setData("data", "tasks");       
     }
 
-    function dragstartHandlerInTable(ev) {
+    function dragstartHandlerInTable(ev) { //Обработчик со стартом перетаскивания задач внутри таблицы
         ev.dataTransfer.setData("id", ev.target.closest(".table-flex__row").getAttribute("data-id-row"));
         ev.dataTransfer.setData("idTask", ev.target.closest(".tbody-td__task").getAttribute("data-id-task"));
         ev.target.classList.remove("tbody-td__task--tooltip")
@@ -167,7 +197,7 @@ async function onInit() {
             const getAttTd = ev.target.closest(".table-flex__cell").getAttribute("data-id-td");
             const startDateInTd = JSON.parse(getAttTd).dateInTd
             
-            if(startDateInTd) {
+            if(startDateInTd  && startDateInTd !== task.planStartDate) { //если дата начала выполнения задачи была изменена
                 changeStartDate(startDateInTd, task)
             } 
 
@@ -181,13 +211,14 @@ async function onInit() {
             const getAttTd = ev.target.closest(".table-flex__cell").getAttribute("data-id-td");
             const startDateInTd = JSON.parse(getAttTd).dateInTd
 
-            if(startDateInTd) {
+            if(startDateInTd && startDateInTd !== task.planStartDate) {  //если дата начала выполнения задачи была изменена
                 changeStartDate(startDateInTd, task)
             }
 
             createColumnsInTable();
 
         }
+        //функция для пересчета даты выполнения окончания задачи, в зависимости от даты начала выполнения
         function changeStartDate(startDateInTd, task) {
             const deltaDay = (Number(Date.parse(startDateInTd)) - Number(Date.parse(task.planStartDate))) /milesInSeconds;
             task.planStartDate = startDateInTd;
@@ -196,6 +227,8 @@ async function onInit() {
             task.planEndDate = endDateInTd;
         }
     }
+
+
 
     //Функция отображения задач в бэклоге
     function showTasks(data) {
@@ -218,7 +251,8 @@ async function onInit() {
         }
     }
 
-    //Функция отображения дат в таблице
+
+    //Функция отображения дат в таблице, в зависимости от кол-ва колонок (передается в аргументе при объявлении функционального выражения, по умолчанию 14 колонок)
     function columnsDateCreate(column = 14) {
         let oneWeek = 0;
 
@@ -252,15 +286,14 @@ async function onInit() {
         };
     }
 
-    //Функция отображения пользователей в таблице с из задачами
+    //Функция отображения пользователей в таблице с задачами
     function showUsersInTable(data, column = 14, arrayDataObj) {
         const milesInSeconds = 86400000;
         const calendarTbody = document.querySelector(".table-flex__body");
 
         calendarTbody.innerHTML = "";
 
-
-        data.forEach((user, items, obj) => {
+        data.forEach((user) => {
 
             //Создание строки таблицы с именеем пользователя в первой ячейке
             const trUserTemplate = document.getElementById("tr-in-table");
@@ -274,76 +307,45 @@ async function onInit() {
             
             
             const taskUser = [];
+
+            //формируем список задач, которые необходимо отобразить для пользователя в одной строке таблицы
             dataTasks.forEach((e) => {
                 if (e.executor !== null && (e.executor.toString() === user.id.toString())) {
                     taskUser.push(e);
                 }
             });
 
+            //формируем ячейки для одного пользователя (формируем в них задачи, если имеются)
             for (let i = 0; i < column; i++) {
                 const tdUser = document.createElement("div");
                 
-                // tdUser.dataset.tr_id = user.id;
                 tdUser.classList.add("table-flex__cell");
                 tdUser.classList.add("table-flex__cell--content");
-                // tdUser.setAttribute("data-id-td", `${user.id}-${arrayDataObj[i].dateInTd}`);
                 tdUser.setAttribute("data-id-td", JSON.stringify(getInfoTdInAttr(user.id, arrayDataObj[i])));
-                // tdUser.dataset("td-id", )
-                
-                if (arrayDataObj[i].dateInTd == getDateInTh(0).dateInTd) tdUser.classList.add("tasks__today");
-                if (arrayDataObj[i].date.week == 6 || arrayDataObj[i].date.week == 0) tdUser.classList.add("tasks__day-off");
                 
 
-                // if(taskUser.some(e => e.planStartDate.contains()))
-                // console.log(taskUser.some(e => e.planStartDate.contains()))
+                //Проверка выходного и текущего дня (если есть совпадения, то окрашиваем ячейку в соответствующий цвет с помощью добавления классов)
+                if (arrayDataObj[i].dateInTd == getDateInTh(0).dateInTd) tdUser.classList.add("tasks__today");
+                if (arrayDataObj[i].date.week == 6 || arrayDataObj[i].date.week == 0) tdUser.classList.add("tasks__day-off");
 
 
                 if (taskUser && taskUser.length > 0) {
                     taskUser.forEach((e) => {
-                        if (e.planStartDate === arrayDataObj[i].dateInTd) {
 
+                        //Создание задачи в таблице, если дата начала выполнения задачи находится в рамках текущей страницы таблицы
+                        if (e.planStartDate === arrayDataObj[i].dateInTd) {  
                             const div = document.createElement("div");
-                            div.classList.add("tbody-td__task");
-                            div.setAttribute("draggable", "true")
-                            div.setAttribute("data-id-task", e.id)
-                            div.setAttribute("data-name-task", e.subject)
-                            
-                            const hintText = "Задача, отображенная у пользователя"
-                            div.setAttribute("data-tooltip", hintText)
-                            div.classList.add("tbody-td__task--tooltip")
-
-                            const title = document.createElement("h4");
-                            title.classList.add("tdbody-td__title");
-                            title.textContent = e.subject;
-
-                            div.appendChild(title)
 
                             let deltaDay = (Number(Date.parse(e.planEndDate)) - Number(Date.parse(e.planStartDate)))/milesInSeconds;
                             if (deltaDay > 1) {
                                 div.style.width = `calc(${100 * (deltaDay > 14 ? 14 : deltaDay)}% + ${(deltaDay > 14 ? 14 : deltaDay) - 3}px)`;
                             }
 
-                            if(new Date(e.planEndDate) < new Date()) {
-                                div.classList.add("tbody-td__task--over")
-                            }
+                            createTaskInTable(tdUser ,div, e)
 
-                            tdUser.appendChild(div);
+                            //Создание задачи в таблице, если дата начала выполнения задачи находится за рамками таблицы слева, а дата окончания в текущей страницы таблицы
                         }  else if(e.planEndDate === arrayDataObj[i].dateInTd && !arrayDataObj.some(d => d.dateInTd === e.planStartDate)) {
                             const div = document.createElement("div");
-                            div.classList.add("tbody-td__task");
-                            div.setAttribute("draggable", "true")
-                            div.setAttribute("data-id-task", e.id)
-                            div.setAttribute("data-name-task", e.subject)
-                            
-                            const hintText = "Задача, отображенная у пользователя"
-                            div.setAttribute("data-tooltip", hintText)
-                            div.classList.add("tbody-td__task--tooltip")
-
-                            const title = document.createElement("h4");
-                            title.classList.add("tdbody-td__title");
-                            title.textContent = e.subject;
-
-                            div.appendChild(title)
 
                             let deltaDay = (Number(Date.parse(e.planEndDate)) - Number(Date.parse(e.planStartDate)))/milesInSeconds;
                             if (deltaDay > 1) {
@@ -351,14 +353,10 @@ async function onInit() {
                                 div.style.left = `calc(${-100 * (deltaDay > 14 ? 14 : deltaDay)}%`;
                             }
 
-                            if(new Date(e.planEndDate) < new Date()) {
-                                div.classList.add("tbody-td__task--over")
-                            }
+                            createTaskInTable(tdUser ,div, e)
 
-                            tdUser.appendChild(div);
-                        }
-                        
-                        else if (Number(Date.parse(e.planStartDate)) < Number(Date.parse(arrayDataObj[i].dateInTd)) <= Number(Date.parse(e.planEndDate))) {
+                            //Создание ячеек-заглушек для того, чтобы задачи не пересекались. Требует доработки!!!
+                        } else if (Number(Date.parse(e.planStartDate)) < Number(Date.parse(arrayDataObj[i].dateInTd)) <= Number(Date.parse(e.planEndDate))) {
                             const div = document.createElement("div");
                             div.classList.add("tbody-td__task");
                             div.setAttribute("draggable", "true")
@@ -370,11 +368,30 @@ async function onInit() {
 
                             div.style.visibility = "hidden";
                             tdUser.appendChild(div);
-                        } else if (Number(Date.parse(arrayDataObj[0].dateInTd)) !=Number(Date.parse(e.planStartDate)) &&Number(Date.parse(arrayDataObj[0].dateInTd)) <Number(Date.parse(e.planEndDate))) {
                         } 
 
+                        //Функция создания задачи в таблице
+                        function createTaskInTable(parentElem, elem, task) {
+                            elem.classList.add("tbody-td__task");
+                            elem.setAttribute("draggable", "true")
+                            elem.setAttribute("data-id-task", task.id)
+                            elem.setAttribute("data-name-task", task.subject)
+                            
+                            const hintText = "Задача, отображенная у пользователя"
+                            elem.setAttribute("data-tooltip", hintText)
+                            elem.classList.add("tbody-td__task--tooltip")
 
-                        // console.log(arrayDataObj)
+                            const title = document.createElement("h4");
+                            title.classList.add("tdbody-td__title");
+                            title.textContent = task.subject;
+
+                            elem.appendChild(title)
+
+                            if(new Date(task.planEndDate) < new Date()) {
+                                elem.classList.add("tbody-td__task--over")
+                            }
+                            parentElem.appendChild(elem);
+                        }
 
                     });
                 }
@@ -385,17 +402,11 @@ async function onInit() {
         });
     }
 
-    btnToday.addEventListener("click", () => {
-        createColumnsInTable("today");
-    });
-    btnLeft.addEventListener("click", () => {
-        createColumnsInTable("left");
-    });
-    btnRight.addEventListener("click", () => {
-        createColumnsInTable("right");
-    });
 
+    //Кусок кода реализации отображения кол-ва колонок в таблице, в зависимости от события (здесь событие на изменение размеров окна браузера и на кнопку)
+    const btnWeek = document.querySelector(".btns__week");
     const clickInCalendarView = ChangeInCalendarViewBtn();
+
     clickInCalendarView.changeResizeInCalendarView();
     btnWeek.addEventListener("click", clickInCalendarView.changeClickInCalendarViewBtn);
     window.addEventListener('resize', clickInCalendarView.changeResizeInCalendarView);
@@ -411,6 +422,9 @@ async function onInit() {
         const twoWeeksNumber = 14;
         const oneWeekNumber = 7;
         const threeDaysNumber = 3;
+
+        const bigWindow = 992;
+        const smallWindow = 768;
 
         const weekTitle = document.querySelector(".btns__week-title")
 
@@ -439,15 +453,15 @@ async function onInit() {
 
                 const clientWidth = document.documentElement.clientWidth;
 
-                if (clientWidth > 992) {
+                if (clientWidth > bigWindow) {
                     stateBtn = twoWeeksNumber;
                     weekTitle.textContent = twoWeeks;
                     createColumnsInTable = columnsDateCreate(twoWeeksNumber)
-                } else if (clientWidth <= 992 && clientWidth > 768) {
+                } else if (clientWidth <= bigWindow && clientWidth > smallWindow) {
                     stateBtn = oneWeekNumber;
                     weekTitle.textContent = oneWeek;
                     createColumnsInTable = columnsDateCreate(oneWeekNumber)
-                } else if (clientWidth <= 768) {
+                } else if (clientWidth <= smallWindow) {
                     stateBtn = threeDaysNumber;
                     weekTitle.textContent = threeDays;
                     createColumnsInTable = columnsDateCreate(threeDaysNumber)
@@ -456,18 +470,6 @@ async function onInit() {
             }
         }
     }
-
-    searchText.addEventListener("keyup", function () {
-        const text = this.value.toLowerCase().trim();
-        const dataSearch = [];
-        dataTasks.forEach((d) => {
-            const textInArray = d.subject.toLowerCase().trim();
-            if (textInArray.indexOf(text) !== -1) {
-                dataSearch.push(d);
-            }
-        });
-        showTasks(dataSearch);
-    });
 
     //Порядок внизу не менять!!!!
     createColumnsInTable("today");
@@ -478,6 +480,7 @@ onInit();
 
 //Функции с преобразованием дат//
 
+//Поиск прошлого блежайшего понедельника
 function getDateInThDelta(day) {
     const date = new Date();
     date.setDate(date.getDate() + day);
@@ -488,6 +491,7 @@ function getDateInThDelta(day) {
 
     return day;
 }
+
 
 function getDateInTh(day) {
     const date = new Date();
@@ -500,6 +504,7 @@ function getDateInTh(day) {
         date: getCurrentDateInTh(date),
     };
 }
+
 function getDateWithDash(date) {
     return  getCurrentDateInTh(date).year +
             "-" +
