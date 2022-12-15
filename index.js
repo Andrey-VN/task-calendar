@@ -1,7 +1,12 @@
+// const API_URL_LIST_USERS =
+//     "https://varankin_dev.elma365.ru/api/extensions/2a38760e-083a-4dd0-aebc-78b570bfd3c7/script/users";
+// const API_URL_LIST_TASKS =
+//     "https://varankin_dev.elma365.ru/api/extensions/2a38760e-083a-4dd0-aebc-78b570bfd3c7/script/tasks";
+
 const API_URL_LIST_USERS =
-    "https://varankin_dev.elma365.ru/api/extensions/2a38760e-083a-4dd0-aebc-78b570bfd3c7/script/users";
+    './file/users.json';
 const API_URL_LIST_TASKS =
-    "https://varankin_dev.elma365.ru/api/extensions/2a38760e-083a-4dd0-aebc-78b570bfd3c7/script/tasks";
+    './file/tasks.json';
 
 class User {
     constructor(user) {
@@ -37,7 +42,8 @@ window.addEventListener("DOMContentLoaded", async () => {
     page.classList.add("display-none")
     load.classList.add("display-flex")
 
-    const [dataTasks, dataUsers] = await Promise.all([getListTasks(API_URL_LIST_TASKS), getListUsers(API_URL_LIST_USERS)])
+    const [dataTasksDate, dataUsersDate] = await Promise.all([getListTasksDate(API_URL_LIST_TASKS), getListUsersDate(API_URL_LIST_USERS)])
+    const [dataTasks, dataUsers] = [getListTasksView(dataTasksDate), getListUsersView(dataUsersDate)]
 
     page.classList.remove("display-none")
     load.classList.remove("display-flex")
@@ -58,7 +64,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     const searchText = document.querySelector(".tasks__search-text");
 
     tasksNames.addEventListener("dragstart", dragstartHandler);
-    calendarTbody.addEventListener("dragstart", dragstartHandlerInTable);
+    calendarTbody.addEventListener("dragstart", dragstartHandlerInTable, true);
 
     calendarTbody.addEventListener("dragover", dragoverHandler);
     calendarTbody.addEventListener("drop", dropHandler);
@@ -87,12 +93,15 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
 
     function dragstartHandler(ev) {
-        ev.dataTransfer.setData("id", ev.target.id);
+        ev.dataTransfer.setData("id", ev.target.getAttribute("data-id-task"));
         ev.dataTransfer.setData("data", "tasks");
+        
     }
 
     function dragstartHandlerInTable(ev) {
-        ev.dataTransfer.setData("id", ev.target.closest(".table-flex__row").id);
+        ev.dataTransfer.setData("id", ev.target.closest(".table-flex__row").getAttribute("data-id-row"));
+        ev.dataTransfer.setData("idTask", ev.target.closest(".tbody-td__task").getAttribute("data-id-task"));
+        ev.target.classList.remove("tbody-td__task--tooltip")
         ev.dataTransfer.setData("data", "table");
     }
 
@@ -101,55 +110,90 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
 
     function dropHandler(ev) {
+        console.log(ev.target)
 
+        const milesInSeconds = 86400000;
         const id = ev.dataTransfer.getData("id");
         const data = ev.dataTransfer.getData("data");
+
+        console.log(id)
 
         if (!id && !data) return;
 
         if (data === "tasks") {
-            console.log("tasks")
-            const elem = document.getElementById(id);
-            const task = dataTasks.find((e) => e.id === elem.id);
+            const elem = document.querySelector(`[data-id-task = "${id}"]`);
+            const task = dataTasks.find((e) => e.id === elem.getAttribute("data-id-task"));
+            task.executor = ev.target.closest(".table-flex__row").getAttribute("data-id-row");
+            
 
-            task.executor = ev.target.closest(".table-flex__row").id;
+            const getAttTd = ev.target.closest(".table-flex__cell").getAttribute("data-id-td");
+            const startDateInTd = JSON.parse(getAttTd).dateInTd
+            
+            if(startDateInTd) {
+
+                const deltaDay = (Number(Date.parse(startDateInTd)) - Number(Date.parse(task.planStartDate))) /milesInSeconds;
+                task.planStartDate = startDateInTd;
+    
+                const endDateInTd = getDateWithDash(new Date(new Date(task.planEndDate).setDate(new Date(task.planEndDate).getDate() + deltaDay)));
+                task.planEndDate = endDateInTd;
+            } 
 
             createColumnsInTable();
             elem.parentNode.removeChild(elem);
         } else if (data === "table") {
-            console.log(id)
-            console.log(dataTasks)
-            const task = dataTasks.find((e) => e.executor !== null && (e.executor.toString() === id));
-            task.executor = ev.target.closest(".table-flex__row").id;
+            const idTask = ev.dataTransfer.getData("idTask");
+            const task = dataTasks.find((e) => (e.executor !== null && (e.executor.toString() === id)) && (e.id !== null && e.id.toString() === idTask));
+            task.executor = ev.target.closest(".table-flex__row").getAttribute("data-id-row");
+
+            const getAttTd = ev.target.closest(".table-flex__cell").getAttribute("data-id-td");
+            const startDateInTd = JSON.parse(getAttTd).dateInTd
+
+            if(startDateInTd) {
+
+                const deltaDay = (Number(Date.parse(startDateInTd)) - Number(Date.parse(task.planStartDate))) /milesInSeconds;
+                task.planStartDate = startDateInTd;
+    
+                const endDateInTd = getDateWithDash(new Date(new Date(task.planEndDate).setDate(new Date(task.planEndDate).getDate() + deltaDay)));
+                task.planEndDate = endDateInTd;
+            }
 
             createColumnsInTable();
-            // elem.parentNode.removeChild(elem);
         }
     }
 
-    async function getListUsers(url) {
+    async function getListUsersDate(url) {
         try {
             const resp = await fetch(url);
             const data = await resp.json();
-            return data.map((element) => {
-                return new User(element);
-            });
+            return data;
         } catch (e) {
             throw e;
         }
     }
 
-    async function getListTasks(url) {
+    async function getListTasksDate(url) {
         try {
             const resp = await fetch(url);
             const data = await resp.json();
-            return data.map((element) => {
-                return new Task(element);
-            });
+            return data;
         } catch (e) {
             throw e;
         }
     }
+
+    function getListUsersView(data) {
+        return data.map((element) => {
+            return new User(element);
+        });
+
+    }
+
+    function getListTasksView(data) {
+        return data.map((element) => {
+            return new Task(element);
+        });
+    }
+    
 
     function showTasks(data) {
         const taskNames = document.querySelector(".tasks__names");
@@ -162,7 +206,7 @@ window.addEventListener("DOMContentLoaded", async () => {
                     const taskInBacklogTemp = document.getElementById("task-in-backlog");
                     const tasksNameOne = taskInBacklogTemp.content.cloneNode(true).querySelector(".tasks__name-one");
 
-                    tasksNameOne.id = element.id;
+                    tasksNameOne.setAttribute("data-id-task", element.id)
                     tasksNameOne.querySelector(".tasks__name-title").textContent = element.subject;
 
                     taskNames.appendChild(tasksNameOne)
@@ -192,7 +236,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
             for (let i = 0; i < column; i++) {
                 calendarTheadTR.innerHTML +=
-                    `<div class="table-flex__cell--header table-flex__cell">
+                `<div class="table-flex__cell--header table-flex__cell">
                     <div class="table-flex__cell--nested-block-date">
                         ${getDateInTh(oneWeek + i).dateInTh}
                     <div>
@@ -211,14 +255,19 @@ window.addEventListener("DOMContentLoaded", async () => {
         calendarTbody.innerHTML = "";
 
 
-        data.forEach((user) => {
+        data.forEach((user, items, obj) => {
 
             //Создание строки таблицы с именеем пользователя в первой ячейке
             const trUserTemplate = document.getElementById("tr-in-table");
             const trUser = trUserTemplate.content.cloneNode(true).querySelector(".table-flex__row");
+            const td = trUser.querySelector(".table-flex__cell--first")
             const nameUser = trUser.querySelector(".table-flex__cell--nested-block-name-user");
-            nameUser.textContent = `${user.surname} ${user.firstName}`;
 
+            td.setAttribute("data-id-td", user.id);
+            nameUser.textContent = `${user.surname} ${user.firstName}`;
+            trUser.setAttribute("data-id-row", user.id);
+            
+            
             const taskUser = [];
             dataTasks.forEach((e) => {
                 if (e.executor !== null && (e.executor.toString() === user.id.toString())) {
@@ -228,12 +277,17 @@ window.addEventListener("DOMContentLoaded", async () => {
 
             for (let i = 0; i < column; i++) {
                 const tdUser = document.createElement("div");
-                trUser.id = user.id;
+                
+                // tdUser.dataset.tr_id = user.id;
                 tdUser.classList.add("table-flex__cell");
                 tdUser.classList.add("table-flex__cell--content");
-
-                if (arrayDataObj[i].date.week == 6 || arrayDataObj[i].date.week == 0) tdUser.classList.add("tasks__day-off");
+                // tdUser.setAttribute("data-id-td", `${user.id}-${arrayDataObj[i].dateInTd}`);
+                tdUser.setAttribute("data-id-td", JSON.stringify(getInfoTdInAttr(user.id, arrayDataObj[i])));
+                // tdUser.dataset("td-id", )
+                
                 if (arrayDataObj[i].dateInTd == getDateInTh(0).dateInTd) tdUser.classList.add("tasks__today");
+                if (arrayDataObj[i].date.week == 6 || arrayDataObj[i].date.week == 0) tdUser.classList.add("tasks__day-off");
+                
 
 
                 if (taskUser && taskUser.length > 0) {
@@ -243,6 +297,12 @@ window.addEventListener("DOMContentLoaded", async () => {
                             const div = document.createElement("div");
                             div.classList.add("tbody-td__task");
                             div.setAttribute("draggable", "true")
+                            div.setAttribute("data-id-task", e.id)
+                            div.setAttribute("data-name-task", e.subject)
+                            
+                            const hintText = "Задача, отображенная у пользователя"
+                            div.setAttribute("data-tooltip", hintText)
+                            div.classList.add("tbody-td__task--tooltip")
 
                             const title = document.createElement("h4");
                             title.classList.add("tdbody-td__title");
@@ -250,20 +310,47 @@ window.addEventListener("DOMContentLoaded", async () => {
 
                             div.appendChild(title)
 
-                            let deltaDay =
-                                (Number(Date.parse(e.planEndDate)) -
-                                    Number(Date.parse(e.planStartDate))) /
-                                milesInSeconds;
+                            let deltaDay = (Number(Date.parse(e.planEndDate)) - Number(Date.parse(e.planStartDate)))/milesInSeconds;
                             if (deltaDay > 1) {
-                                div.style.width = `calc(${100 * deltaDay}% + ${deltaDay - 3
-                                    }px)`;
+                                div.style.width = `calc(${100 * deltaDay}% + ${deltaDay - 3}px)`;
                             }
+
+                            if(new Date(e.planEndDate) < new Date()) {
+                                div.classList.add("tbody-td__task--over")
+                            }
+
                             tdUser.appendChild(div);
-                        } else if (
-                            Number(Date.parse(e.planStartDate)) <
-                            Number(Date.parse(arrayDataObj[i].dateInTd)) <=
-                            Number(Date.parse(e.planEndDate))
-                        ) {
+                        }  else if(e.planEndDate === arrayDataObj[i].dateInTd && !arrayDataObj.some(d => d.dateInTd === e.planStartDate)) {
+                            const div = document.createElement("div");
+                            div.classList.add("tbody-td__task");
+                            div.setAttribute("draggable", "true")
+                            div.setAttribute("data-id-task", e.id)
+                            div.setAttribute("data-name-task", e.subject)
+                            
+                            const hintText = "Задача, отображенная у пользователя"
+                            div.setAttribute("data-tooltip", hintText)
+                            div.classList.add("tbody-td__task--tooltip")
+
+                            const title = document.createElement("h4");
+                            title.classList.add("tdbody-td__title");
+                            title.textContent = e.subject;
+
+                            div.appendChild(title)
+
+                            let deltaDay = (Number(Date.parse(e.planEndDate)) - Number(Date.parse(e.planStartDate)))/milesInSeconds;
+                            if (deltaDay > 1) {
+                                div.style.width = `calc(${100 * deltaDay}%`;
+                                div.style.left = `calc(${-100 * deltaDay}%`;
+                            }
+
+                            if(new Date(e.planEndDate) < new Date()) {
+                                div.classList.add("tbody-td__task--over")
+                            }
+
+                            tdUser.appendChild(div);
+                        }
+                        
+                        else if (Number(Date.parse(e.planStartDate)) < Number(Date.parse(arrayDataObj[i].dateInTd)) <= Number(Date.parse(e.planEndDate))) {
                             const div = document.createElement("div");
                             div.classList.add("tbody-td__task");
                             div.setAttribute("draggable", "true")
@@ -275,13 +362,12 @@ window.addEventListener("DOMContentLoaded", async () => {
 
                             div.style.visibility = "hidden";
                             tdUser.appendChild(div);
-                        } else if (
-                            Number(Date.parse(arrayDataObj[0].dateInTd)) !=
-                            Number(Date.parse(e.planStartDate)) &&
-                            Number(Date.parse(arrayDataObj[0].dateInTd)) <
-                            Number(Date.parse(e.planEndDate))
-                        ) {
-                        }
+                        } else if (Number(Date.parse(arrayDataObj[0].dateInTd)) !=Number(Date.parse(e.planStartDate)) &&Number(Date.parse(arrayDataObj[0].dateInTd)) <Number(Date.parse(e.planEndDate))) {
+                        } 
+
+
+                        // console.log(arrayDataObj)
+
                     });
                 }
                 trUser.appendChild(tdUser);
@@ -398,14 +484,17 @@ function getDateInTh(day) {
     return {
         dateInTh:
             getCurrentDateInTh(date).day + "." + getCurrentDateInTh(date).month,
-        dateInTd:
-            getCurrentDateInTh(date).year +
+        dateInTd:getDateWithDash(date),
+        date: getCurrentDateInTh(date),
+    };
+}
+function getDateWithDash(date) {
+    return  getCurrentDateInTh(date).year +
             "-" +
             getCurrentDateInTh(date).month +
             "-" +
-            getCurrentDateInTh(date).day,
-        date: getCurrentDateInTh(date),
-    };
+            getCurrentDateInTh(date).day;
+
 }
 
 function getCurrentDateInTh(date) {
@@ -429,4 +518,17 @@ function getCurrentDateInTh(date) {
     };
 }
 
+
+
+
+function getInfoTdInAttr(id, arrayDataObj) {
+    return {
+        id,
+        day: arrayDataObj.date.day,
+        month: arrayDataObj.date.month,
+        year: arrayDataObj.date.year,
+        week: arrayDataObj.date.week,
+        dateInTd : arrayDataObj.dateInTd
+    };
+}
 
